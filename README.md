@@ -58,3 +58,6 @@ the installed app in place.
 3. Every session: `scripts/adb-connect.sh <ip>:<port>` (the port shown on the Wireless debugging page).
 4. `scripts/deploy.sh release` builds, installs, and also drops the APK in
    `/mnt/c/Users/nghho/accountabilityApp/apks/` for sideloading if adb isn't connected.
+
+No adb? Plug the phone in over USB, choose "File transfer", and run `scripts/push-to-phone.sh`; it copies the
+newest APK into the phone's Download folder. Then open it from the Files app to install.
