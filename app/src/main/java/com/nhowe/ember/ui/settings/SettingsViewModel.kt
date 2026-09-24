@@ -40,6 +40,16 @@ class SettingsViewModel(private val c: AppContainer) : ViewModel() {
         c.reminderScheduler.sync(c.settingsRepository.settings.first())
     }
 
+    fun setHourlyEnabled(b: Boolean) = launch {
+        c.settingsRepository.setHourlyEnabled(b)
+        c.reminderScheduler.sync(c.settingsRepository.settings.first())
+    }
+
+    fun setHourlyWindow(start: LocalTime, end: LocalTime) = launch {
+        c.settingsRepository.setHourlyWindow(start, end)
+        c.reminderScheduler.sync(c.settingsRepository.settings.first())
+    }
+
     fun setReminderTime(t: LocalTime) = launch {
         c.settingsRepository.setReminderTime(t)
         c.reminderScheduler.sync(c.settingsRepository.settings.first())

@@ -1,6 +1,7 @@
 package com.nhowe.ember.domain.engine
 
 import com.nhowe.ember.core.time.ALL_WEEKDAYS
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.Completion
 import com.nhowe.ember.domain.model.DayOverride
 import com.nhowe.ember.domain.model.Goal
@@ -34,6 +35,7 @@ class HistoryBuilder {
         kind: GoalKind = GoalKind.RECURRING,
         oneOffDate: LocalDate? = null,
         title: String = id,
+        cadence: Cadence = Cadence.DAILY,
     ): String {
         if (goals.none { it.id == id }) {
             goals += Goal(id, kind, oneOffDate, createdAt = goals.size.toLong(), archivedAt = null, sortOrder = goals.size)
@@ -41,7 +43,7 @@ class HistoryBuilder {
         versions += GoalVersion(
             id = "$id-v${versions.size}", goalId = id, validFrom = from, validTo = to, title = title,
             emoji = "✅", colorIndex = 0, type = type, targetCount = target, unit = null,
-            weekdayMask = weekdays, weight = weight,
+            weekdayMask = weekdays, weight = weight, cadence = cadence,
         )
         return id
     }

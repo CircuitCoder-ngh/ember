@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.nhowe.ember.data.db.dao.CelebrationDao
 import com.nhowe.ember.data.db.dao.CompletionDao
@@ -19,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 
 @Database(
     entities = [GoalEntity::class, GoalVersionEntity::class, CompletionEntity::class, DayOverrideEntity::class, CelebrationEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class EmberDatabase : RoomDatabase() {
@@ -30,9 +33,17 @@ abstract class EmberDatabase : RoomDatabase() {
     abstract fun celebrationDao(): CelebrationDao
 
     companion object {
+        /** v2: weekly/monthly cadence on goal versions. */
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.execSQL("ALTER TABLE goal_version ADD COLUMN cadence TEXT NOT NULL DEFAULT 'DAILY'")
+            }
+        }
+
         fun build(context: Context, name: String = "ember.db"): EmberDatabase =
             Room.databaseBuilder<EmberDatabase>(context.applicationContext, name)
                 .setDriver(BundledSQLiteDriver())
+                .addMigrations(MIGRATION_1_2)
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
     }

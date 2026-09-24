@@ -30,13 +30,18 @@ object DayPlanResolver {
         for (date in datesBetween(from, to)) {
             val active = ArrayList<ResolvedGoal>()
             val skipped = ArrayList<ResolvedGoal>()
+            val periodic = ArrayList<ResolvedGoal>()
             for (goal in orderedGoals) {
                 val version = versionsByGoal[goal.id]?.firstOrNull { it.covers(date) } ?: continue
                 if (!version.scheduledOn(date, goal)) continue
                 val resolved = ResolvedGoal(goal, version, completions[goal.id to date])
-                if ((goal.id to date) in skips) skipped += resolved else active += resolved
+                when {
+                    version.isPeriodic -> periodic += resolved
+                    (goal.id to date) in skips -> skipped += resolved
+                    else -> active += resolved
+                }
             }
-            result[date] = DayPlan(date, active, skipped)
+            result[date] = DayPlan(date, active, skipped, periodic)
         }
         return result
     }

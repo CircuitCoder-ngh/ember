@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.nhowe.ember.core.time.ALL_WEEKDAYS
 import com.nhowe.ember.data.repo.GoalDraft
 import com.nhowe.ember.di.AppContainer
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.domain.model.GoalType
 import java.time.LocalDate
@@ -38,6 +39,7 @@ class GoalEditorViewModel(
     var weekdayMask by mutableStateOf(ALL_WEEKDAYS)
     var weight by mutableStateOf(1)
     var note by mutableStateOf("")
+    var cadence by mutableStateOf(Cadence.DAILY)
 
     init {
         if (goalId != null) {
@@ -58,14 +60,19 @@ class GoalEditorViewModel(
                     weekdayMask = version.weekdayMask
                     weight = version.weight
                     note = version.note ?: ""
+                    cadence = version.cadence
                 }
                 loaded = true
             }
         }
     }
 
+    val isPeriodic: Boolean get() = !isOneOff && cadence != Cadence.DAILY
+
     val canSave: Boolean
-        get() = title.isNotBlank() && (type == GoalType.CHECK || (target.toIntOrNull() ?: 0) > 0) && (isOneOff || weekdayMask != 0)
+        get() = title.isNotBlank() &&
+            (type == GoalType.CHECK && !isPeriodic || (target.toIntOrNull() ?: 0) > 0) &&
+            (isOneOff || isPeriodic || weekdayMask != 0)
 
     fun toggleWeekday(bit: Int) { weekdayMask = weekdayMask xor bit }
 
@@ -74,6 +81,7 @@ class GoalEditorViewModel(
         val draft = GoalDraft(
             title = title, emoji = emoji, colorIndex = colorIndex, type = type,
             targetCount = target.toIntOrNull(), unit = unit, weekdayMask = weekdayMask, weight = weight, note = note,
+            cadence = if (isOneOff) Cadence.DAILY else cadence,
         )
         c.haptics.success()
         viewModelScope.launch {

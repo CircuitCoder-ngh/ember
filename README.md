@@ -6,6 +6,8 @@ your best day, check them off, and watch your streak, XP and calendar fill in. E
 ## How it works
 
 - **Daily goals** recur on the weekdays you choose. **One-off goals** live on a single date.
+- **Weekly and monthly goals** have a target per period ("Gym 3× a week", "300 pages a month"). Log progress on
+  any day; they count toward the week/month score, not the daily score or streak.
 - Goals are **check-off** or **count-up** (e.g. "Read 20 pages": 12/20 = 60% credit).
 - Each day gets a **score** = weighted average credit of the goals scheduled that day. Days with nothing
   scheduled are rest days and are excluded from averages, not counted as zero.
@@ -16,6 +18,9 @@ your best day, check them off, and watch your streak, XP and calendar fill in. E
 - **Editing a goal never rewrites history.** Each edit closes the old definition yesterday and opens a new one
   today, so past days always show the goal exactly as it was.
 - Streak, XP and badges are recomputed from history every time, so fixing a past day fixes everything.
+- Optional **hourly progress card**: a silent notification listing what's still open today, your %, streak and a
+  quote, refreshed every hour and whenever you check something off. Optional **daily nudge** at a set time.
+- Huge one-off goals are starred on the calendar and listed under **Coming up**.
 
 ## Layout
 

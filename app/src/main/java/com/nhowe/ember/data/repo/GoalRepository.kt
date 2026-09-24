@@ -6,6 +6,7 @@ import com.nhowe.ember.data.db.dao.GoalDao
 import com.nhowe.ember.data.db.dao.GoalVersionDao
 import com.nhowe.ember.data.db.entity.GoalEntity
 import com.nhowe.ember.data.db.entity.GoalVersionEntity
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.domain.model.GoalType
 import java.time.LocalDate
@@ -22,6 +23,7 @@ data class GoalDraft(
     val weekdayMask: Int = ALL_WEEKDAYS,
     val weight: Int = 1,
     val note: String? = null,
+    val cadence: Cadence = Cadence.DAILY,
 )
 
 /**
@@ -106,10 +108,11 @@ class GoalRepository(
             emoji = emoji,
             colorIndex = colorIndex,
             type = type.name,
-            targetCount = if (type == GoalType.QUANTITY) (targetCount ?: 1).coerceAtLeast(1) else null,
+            targetCount = if (type == GoalType.QUANTITY || cadence != Cadence.DAILY) (targetCount ?: 1).coerceAtLeast(1) else null,
             unit = unit?.trim()?.takeIf { it.isNotEmpty() },
             weekdayMask = if (weekdayMask == 0) ALL_WEEKDAYS else weekdayMask,
             weight = weight.coerceIn(1, 3),
             note = note?.trim()?.takeIf { it.isNotEmpty() },
+            cadence = cadence.name,
         )
 }

@@ -47,6 +47,8 @@ import com.nhowe.ember.ui.components.ConfettiOverlay
 import com.nhowe.ember.ui.components.ConfettiTrigger
 import com.nhowe.ember.ui.components.FlameMascot
 import com.nhowe.ember.ui.components.GoalRow
+import com.nhowe.ember.ui.components.PeriodGoalRow
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.ui.components.ProgressRing
 import com.nhowe.ember.ui.components.ScreenHeader
 import com.nhowe.ember.ui.components.SectionLabel
@@ -82,6 +84,7 @@ fun TodayScreen(
                 is TodayEffect.XpGained -> { xpToast = effect.amount; delay(1400); xpToast = null }
                 TodayEffect.GoalDone -> confetti = ConfettiTrigger(System.nanoTime(), count = 28, originY = 0.45f)
                 TodayEffect.DayComplete -> confetti = ConfettiTrigger(System.nanoTime(), count = 160, originY = 0.3f)
+                TodayEffect.PeriodDone -> confetti = ConfettiTrigger(System.nanoTime(), count = 90, originY = 0.4f)
             }
         }
     }
@@ -112,6 +115,7 @@ fun TodayScreen(
                     done = plan.doneCount,
                     total = plan.goals.size,
                     isRest = !plan.hasGoals,
+                    hasPeriodic = plan.periodic.isNotEmpty(),
                     snapshot = snap,
                     threshold = snap.settings.streakThreshold,
                 )
@@ -127,8 +131,25 @@ fun TodayScreen(
                         onLongPress = { container.haptics.click(); actionsFor = goal },
                     )
                 }
-            } else {
+            } else if (plan.periodic.isEmpty()) {
                 item(key = "rest") { RestDayCard(onNewGoal = onNewGoal, onNewOneOff = { onNewOneOff(snap.today) }) }
+            }
+            listOf(Cadence.WEEKLY to "This week", Cadence.MONTHLY to "This month").forEach { (cadence, label) ->
+                val group = plan.periodic.filter { it.version.cadence == cadence }
+                if (group.isNotEmpty()) {
+                    item(key = "label-$cadence") { SectionLabel(label) }
+                    items(group, key = { "p-${it.id}" }) { goal ->
+                        PeriodGoalRow(
+                            goal = goal,
+                            period = snap.periodFor(goal.id, snap.today),
+                            date = snap.today,
+                            modifier = Modifier.padding(horizontal = 16.dp).animateItem(),
+                            onToggle = { vm.toggle(goal) },
+                            onCountChange = { vm.setCount(goal, it) },
+                            onLongPress = { container.haptics.click(); actionsFor = goal },
+                        )
+                    }
+                }
             }
             if (plan.skipped.isNotEmpty()) {
                 item(key = "skipped-label") { SectionLabel("Skipped today") }
@@ -142,7 +163,7 @@ fun TodayScreen(
                     }
                 }
             }
-            if (plan.hasGoals) {
+            if (plan.hasGoals || plan.periodic.isNotEmpty()) {
                 item(key = "add-oneoff") {
                     TextButton(onClick = { onNewOneOff(snap.today) }, modifier = Modifier.padding(horizontal = 12.dp)) {
                         Icon(Icons.Rounded.Add, contentDescription = null)
@@ -195,6 +216,7 @@ private fun HeroCard(
     done: Int,
     total: Int,
     isRest: Boolean,
+    hasPeriodic: Boolean,
     snapshot: com.nhowe.ember.domain.model.EngineSnapshot,
     threshold: Double,
 ) {
@@ -226,7 +248,7 @@ private fun HeroCard(
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                 FlameMascot(state = flameStateFor(snapshot), size = 110.dp)
                 Text(
-                    statusLine(progress, threshold, snapshot, isRest),
+                    statusLine(progress, threshold, snapshot, isRest, hasPeriodic),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -242,7 +264,8 @@ private fun HeroCard(
     }
 }
 
-private fun statusLine(progress: Float, threshold: Double, snap: com.nhowe.ember.domain.model.EngineSnapshot, isRest: Boolean): String = when {
+private fun statusLine(progress: Float, threshold: Double, snap: com.nhowe.ember.domain.model.EngineSnapshot, isRest: Boolean, hasPeriodic: Boolean): String = when {
+    isRest && hasPeriodic -> "No daily goals today. Chip away at the week."
     isRest -> "Nothing scheduled. Rest up."
     progress >= 0.999f -> "Perfect day. Legendary."
     snap.streak.todaySecured -> "Streak secured. Push for perfect?"

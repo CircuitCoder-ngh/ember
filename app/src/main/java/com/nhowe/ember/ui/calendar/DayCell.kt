@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.Icon
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,6 +44,7 @@ fun DayCell(
     plannedCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    starred: Boolean = false,
 ) {
     val colors = MaterialTheme.ember
     val scheme = MaterialTheme.colorScheme
@@ -101,7 +106,12 @@ fun DayCell(
                 }
                 DayState.REST -> drawArc(ringColor.copy(alpha = 0.5f), -90f, 360f, false, topLeft, arcSize, style = Stroke(1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))))
                 DayState.FUTURE, null -> {
-                    if (plannedCount > 0) drawArc(ringColor, -90f, 360f, false, topLeft, arcSize, style = Stroke(1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))))
+                    if (starred) {
+                        drawCircle(colors.perfect.copy(alpha = 0.10f))
+                        drawArc(colors.perfect, -90f, 360f, false, topLeft, arcSize, style = Stroke(2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 6f))))
+                    } else if (plannedCount > 0) {
+                        drawArc(ringColor, -90f, 360f, false, topLeft, arcSize, style = Stroke(1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f))))
+                    }
                 }
             }
             if (isToday) {
@@ -114,6 +124,14 @@ fun DayCell(
             color = textColor,
             fontWeight = if (isToday || state == DayState.PERFECT) FontWeight.Bold else FontWeight.Medium,
         )
+        if (starred) {
+            Icon(
+                Icons.Rounded.Star,
+                contentDescription = "Big goal this day",
+                tint = colors.perfect,
+                modifier = Modifier.align(Alignment.TopEnd).padding(top = 1.dp, end = 1.dp).size(13.dp),
+            )
+        }
     }
 }
 

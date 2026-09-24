@@ -24,6 +24,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.nhowe.ember.domain.model.DayPlan
 import com.nhowe.ember.domain.model.DayState
+import com.nhowe.ember.domain.model.PeriodGoalProgress
+import com.nhowe.ember.ui.components.PeriodGoalRow
 import com.nhowe.ember.domain.model.ResolvedGoal
 import com.nhowe.ember.ui.components.GoalRow
 import com.nhowe.ember.ui.components.ProgressRing
@@ -44,6 +46,7 @@ fun DayDetailSheet(
     onCountChange: (ResolvedGoal, Int) -> Unit,
     onSkip: (String, Boolean) -> Unit,
     onNewOneOff: () -> Unit,
+    periodFor: (String) -> PeriodGoalProgress? = { null },
 ) {
     val editable = date <= today
     val isPast = date < today
@@ -76,7 +79,7 @@ fun DayDetailSheet(
                         .padding(10.dp),
                 )
             }
-            if (!plan.hasGoals && plan.skipped.isEmpty()) {
+            if (!plan.hasGoals && plan.skipped.isEmpty() && plan.periodic.isEmpty()) {
                 Text(
                     if (date > today) "Nothing planned yet." else "No goals were scheduled. A rest day.",
                     style = MaterialTheme.typography.bodyMedium,
@@ -92,6 +95,18 @@ fun DayDetailSheet(
                     onToggle = { onToggle(goal) },
                     onCountChange = { onCountChange(goal, it) },
                     onLongPress = { if (editable) onSkip(goal.id, true) },
+                )
+            }
+            plan.periodic.forEach { goal ->
+                PeriodGoalRow(
+                    goal = goal,
+                    period = periodFor(goal.id),
+                    date = date,
+                    editable = editable,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    onToggle = { onToggle(goal) },
+                    onCountChange = { onCountChange(goal, it) },
+                    onLongPress = {},
                 )
             }
             plan.skipped.forEach { goal ->

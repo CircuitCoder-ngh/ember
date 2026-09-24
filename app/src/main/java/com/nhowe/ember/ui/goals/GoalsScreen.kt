@@ -57,7 +57,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nhowe.ember.core.time.ALL_WEEKDAYS
 import com.nhowe.ember.di.LocalAppContainer
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.GoalType
+import com.nhowe.ember.domain.model.GoalVersion
 import com.nhowe.ember.ui.components.ScreenHeader
 import com.nhowe.ember.ui.theme.goalColor
 import java.time.DayOfWeek
@@ -146,7 +148,7 @@ fun GoalsScreen(
                     itemsIndexed(items, key = { _, it -> it.goal.id }) { _, item ->
                         GoalListRow(
                             item = item,
-                            subtitle = scheduleLabel(item.version.weekdayMask),
+                            subtitle = scheduleLabel(item.version),
                             onClick = {},
                             trailing = {
                                 IconButton(onClick = { vm.unarchive(item.goal.id) }) { Icon(Icons.Rounded.Unarchive, contentDescription = "Restore", tint = MaterialTheme.colorScheme.primary) }
@@ -234,7 +236,7 @@ private fun ReorderableGoalList(
             ) {
                 GoalListRow(
                     item = item,
-                    subtitle = scheduleLabel(item.version.weekdayMask) + typeSuffix(item),
+                    subtitle = scheduleLabel(item.version) + typeSuffix(item),
                     onClick = { onEdit(item) },
                     leading = {
                         Icon(Icons.Rounded.DragHandle, contentDescription = "Reorder", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = handle.padding(end = 6.dp))
@@ -280,7 +282,16 @@ private fun GoalListRow(
 }
 
 private fun typeSuffix(item: GoalListItem): String =
-    if (item.version.type == GoalType.QUANTITY) " · ${item.version.target}${item.version.unit?.let { " $it" } ?: ""}" else ""
+    if (item.version.type == GoalType.QUANTITY && !item.version.isPeriodic) " · ${item.version.target}${item.version.unit?.let { " $it" } ?: ""}" else ""
+
+fun scheduleLabel(version: GoalVersion): String = when (version.cadence) {
+    Cadence.DAILY -> scheduleLabel(version.weekdayMask)
+    Cadence.WEEKLY, Cadence.MONTHLY -> {
+        val per = if (version.cadence == Cadence.WEEKLY) "a week" else "a month"
+        if (version.type == GoalType.QUANTITY) "${version.target}${version.unit?.let { " $it" } ?: ""} $per"
+        else "${version.target}× $per"
+    }
+}
 
 fun scheduleLabel(mask: Int): String {
     if (mask == ALL_WEEKDAYS || mask == 0) return "Every day"

@@ -26,6 +26,8 @@ data class DayPlan(
     val date: LocalDate,
     val goals: List<ResolvedGoal>,
     val skipped: List<ResolvedGoal> = emptyList(),
+    /** Weekly/monthly goals active this day. They never affect the day score. */
+    val periodic: List<ResolvedGoal> = emptyList(),
 ) {
     /** Weighted mean credit, or null when nothing was scheduled (a rest day). */
     val score: Double?

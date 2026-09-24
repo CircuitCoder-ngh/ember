@@ -16,7 +16,21 @@ class ReminderScheduler(private val context: Context) {
 
     fun sync(settings: Settings) {
         if (settings.reminderEnabled) scheduleNext(settings.reminderTime) else cancel()
+        syncHourly(settings)
     }
+
+    /** Inexact repeating alarm at the top of every hour; the receiver decides whether to show anything. */
+    fun syncHourly(settings: Settings) {
+        val pi = hourlyIntent()
+        if (!settings.hourlyEnabled) { alarmManager.cancel(pi); return }
+        val next = ZonedDateTime.now(ZoneId.systemDefault()).plusHours(1).withMinute(0).withSecond(0).withNano(0)
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, next.toInstant().toEpochMilli(), AlarmManager.INTERVAL_HOUR, pi)
+    }
+
+    private fun hourlyIntent(): PendingIntent = PendingIntent.getBroadcast(
+        context, HOURLY_REQUEST_CODE, Intent(context, HourlyReceiver::class.java),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
 
     fun scheduleNext(time: LocalTime, now: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault())) {
         var next = now.with(time).withSecond(0).withNano(0)
@@ -38,6 +52,7 @@ class ReminderScheduler(private val context: Context) {
 
     private companion object {
         const val REQUEST_CODE = 42
+        const val HOURLY_REQUEST_CODE = 43
         const val WINDOW_MS = 10L * 60L * 1000L
     }
 }

@@ -25,6 +25,9 @@ class SettingsRepository(context: Context) {
         val boundaryHour = intPreferencesKey("day_boundary_hour")
         val reminderEnabled = booleanPreferencesKey("reminder_enabled")
         val reminderMinutes = intPreferencesKey("reminder_minutes")
+        val hourlyEnabled = booleanPreferencesKey("hourly_enabled")
+        val hourlyStart = intPreferencesKey("hourly_start_minutes")
+        val hourlyEnd = intPreferencesKey("hourly_end_minutes")
         val haptics = booleanPreferencesKey("haptics")
         val sound = booleanPreferencesKey("sound")
         val theme = stringPreferencesKey("theme")
@@ -40,6 +43,9 @@ class SettingsRepository(context: Context) {
             dayBoundaryHour = p[Keys.boundaryHour] ?: 0,
             reminderEnabled = p[Keys.reminderEnabled] ?: false,
             reminderTime = (p[Keys.reminderMinutes] ?: (21 * 60)).let { LocalTime.of(it / 60, it % 60) },
+            hourlyEnabled = p[Keys.hourlyEnabled] ?: false,
+            hourlyStart = (p[Keys.hourlyStart] ?: (8 * 60)).let { LocalTime.of(it / 60, it % 60) },
+            hourlyEnd = (p[Keys.hourlyEnd] ?: (22 * 60)).let { LocalTime.of(it / 60, it % 60) },
             hapticsEnabled = p[Keys.haptics] ?: true,
             soundEnabled = p[Keys.sound] ?: false,
             themeMode = p[Keys.theme]?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() } ?: ThemeMode.DARK,
@@ -54,6 +60,11 @@ class SettingsRepository(context: Context) {
     suspend fun setBoundaryHour(hour: Int) = store.edit { it[Keys.boundaryHour] = hour.coerceIn(0, 6) }
     suspend fun setReminderEnabled(enabled: Boolean) = store.edit { it[Keys.reminderEnabled] = enabled }
     suspend fun setReminderTime(time: LocalTime) = store.edit { it[Keys.reminderMinutes] = time.hour * 60 + time.minute }
+    suspend fun setHourlyEnabled(enabled: Boolean) = store.edit { it[Keys.hourlyEnabled] = enabled }
+    suspend fun setHourlyWindow(start: LocalTime, end: LocalTime) = store.edit {
+        it[Keys.hourlyStart] = start.hour * 60 + start.minute
+        it[Keys.hourlyEnd] = end.hour * 60 + end.minute
+    }
     suspend fun setHaptics(enabled: Boolean) = store.edit { it[Keys.haptics] = enabled }
     suspend fun setSound(enabled: Boolean) = store.edit { it[Keys.sound] = enabled }
     suspend fun setTheme(mode: ThemeMode) = store.edit { it[Keys.theme] = mode.name }
@@ -67,6 +78,9 @@ class SettingsRepository(context: Context) {
         it[Keys.boundaryHour] = s.dayBoundaryHour
         it[Keys.reminderEnabled] = s.reminderEnabled
         it[Keys.reminderMinutes] = s.reminderTime.hour * 60 + s.reminderTime.minute
+        it[Keys.hourlyEnabled] = s.hourlyEnabled
+        it[Keys.hourlyStart] = s.hourlyStart.hour * 60 + s.hourlyStart.minute
+        it[Keys.hourlyEnd] = s.hourlyEnd.hour * 60 + s.hourlyEnd.minute
         it[Keys.haptics] = s.hapticsEnabled
         it[Keys.sound] = s.soundEnabled
         it[Keys.theme] = s.themeMode.name

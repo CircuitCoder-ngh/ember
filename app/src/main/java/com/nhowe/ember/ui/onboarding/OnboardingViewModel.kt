@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.nhowe.ember.core.time.ALL_WEEKDAYS
 import com.nhowe.ember.data.repo.GoalDraft
 import com.nhowe.ember.di.AppContainer
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.GoalType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -25,8 +26,10 @@ val StarterGoals = listOf(
     StarterGoal(GoalDraft("Eat a real vegetable", "🥗", 2), false),
     StarterGoal(GoalDraft("In bed by 11", "🛌", 4), false),
     StarterGoal(GoalDraft("Tidy for 10 minutes", "🧹", 9), false),
-    StarterGoal(GoalDraft("Call someone you love", "📞", 5, weekdayMask = 0b1100000), false),
+    StarterGoal(GoalDraft("Gym session", "🏋️", 6, targetCount = 3, cadence = Cadence.WEEKLY), false),
+    StarterGoal(GoalDraft("Call someone you love", "📞", 5, targetCount = 1, cadence = Cadence.WEEKLY), false),
     StarterGoal(GoalDraft("Deep work block", "💻", 6, weekdayMask = 0b0011111), false),
+    StarterGoal(GoalDraft("Finish a book", "📖", 3, targetCount = 1, cadence = Cadence.MONTHLY), false),
     StarterGoal(GoalDraft("Stretch", "🤸", 7), false),
 )
 

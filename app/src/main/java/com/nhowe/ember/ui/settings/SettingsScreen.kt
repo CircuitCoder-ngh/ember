@@ -76,11 +76,13 @@ fun SettingsScreen(onBack: () -> Unit) {
     var threshold by remember(s.streakThreshold) { mutableStateOf(s.streakThreshold.toFloat()) }
     var name by remember(s.userName) { mutableStateOf(s.userName) }
     var showTime by remember { mutableStateOf(false) }
+    var showWindow by remember { mutableStateOf<String?>(null) } // "start" | "end"
     var confirmReset by remember { mutableStateOf(false) }
     var pendingImport by remember { mutableStateOf<android.net.Uri?>(null) }
 
+    var pendingToggle by remember { mutableStateOf("reminder") }
     val notifPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) vm.setReminderEnabled(true)
+        if (granted) { if (pendingToggle == "hourly") vm.setHourlyEnabled(true) else vm.setReminderEnabled(true) }
     }
     val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         uri?.let { vm.exportBackup(context, it) }
@@ -158,12 +160,26 @@ fun SettingsScreen(onBack: () -> Unit) {
             SectionLabel("Reminder")
             Group {
                 SwitchRow("Daily nudge", "Only fires if today is still below your bar", s.reminderEnabled) { on ->
-                    if (on && Build.VERSION.SDK_INT >= 33) notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    if (on && Build.VERSION.SDK_INT >= 33) { pendingToggle = "reminder"; notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS) }
                     else vm.setReminderEnabled(on)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Time", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                     TextButton(onClick = { showTime = true }) { Text(s.reminderTime.format(DateTimeFormatter.ofPattern("h:mm a"))) }
+                }
+            }
+
+            SectionLabel("Hourly progress card")
+            Group {
+                SwitchRow("Keep what's left in the shade", "A silent notification with today's open goals, your %, and a quote. Refreshes hourly and whenever you check something off.", s.hourlyEnabled) { on ->
+                    if (on && Build.VERSION.SDK_INT >= 33) { pendingToggle = "hourly"; notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS) }
+                    else vm.setHourlyEnabled(on)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Active between", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    TextButton(onClick = { showWindow = "start" }) { Text(s.hourlyStart.format(DateTimeFormatter.ofPattern("h:mm a"))) }
+                    Text("and", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    TextButton(onClick = { showWindow = "end" }) { Text(s.hourlyEnd.format(DateTimeFormatter.ofPattern("h:mm a"))) }
                 }
             }
 
@@ -215,6 +231,22 @@ fun SettingsScreen(onBack: () -> Unit) {
             onDismissRequest = { showTime = false },
             confirmButton = { TextButton(onClick = { vm.setReminderTime(LocalTime.of(state.hour, state.minute)); showTime = false }) { Text("OK") } },
             dismissButton = { TextButton(onClick = { showTime = false }) { Text("Cancel") } },
+            text = { TimePicker(state = state) },
+        )
+    }
+    showWindow?.let { which ->
+        val initial = if (which == "start") s.hourlyStart else s.hourlyEnd
+        val state = rememberTimePickerState(initialHour = initial.hour, initialMinute = initial.minute)
+        AlertDialog(
+            onDismissRequest = { showWindow = null },
+            confirmButton = {
+                TextButton(onClick = {
+                    val t = LocalTime.of(state.hour, state.minute)
+                    if (which == "start") vm.setHourlyWindow(t, s.hourlyEnd) else vm.setHourlyWindow(s.hourlyStart, t)
+                    showWindow = null
+                }) { Text("OK") }
+            },
+            dismissButton = { TextButton(onClick = { showWindow = null }) { Text("Cancel") } },
             text = { TimePicker(state = state) },
         )
     }

@@ -9,7 +9,14 @@ import com.nhowe.ember.data.repo.HistoryRepository
 import com.nhowe.ember.data.repo.ProgressRepository
 import com.nhowe.ember.data.repo.SettingsRepository
 import com.nhowe.ember.domain.EngineStore
+import com.nhowe.ember.notifications.ProgressNotifier
 import com.nhowe.ember.notifications.ReminderScheduler
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.FlowPreview
 import java.time.LocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,4 +51,13 @@ class AppContainer(context: Context) {
         shownCelebrationKeys = historyRepository.shownCelebrationKeys,
         scope = appScope,
     )
+
+    init {
+        // Keep the hourly progress card in step with what the user just checked off.
+        @OptIn(FlowPreview::class)
+        combine(engineStore.snapshot.filterNotNull(), settingsRepository.settings) { snap, s -> snap to s }
+            .debounce(400)
+            .onEach { (snap, s) -> runCatching { ProgressNotifier.sync(context.applicationContext, snap, s) } }
+            .launchIn(appScope)
+    }
 }

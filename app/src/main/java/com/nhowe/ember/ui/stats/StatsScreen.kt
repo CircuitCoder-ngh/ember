@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.nhowe.ember.core.time.endOfMonth
 import com.nhowe.ember.core.time.endOfWeek
 import com.nhowe.ember.core.time.startOfMonth
 import com.nhowe.ember.core.time.startOfWeek
@@ -67,9 +68,9 @@ fun StatsScreen(onOpenSettings: () -> Unit) {
     val snap = snapshot ?: return
     val today = snap.today
 
-    val week = remember(snap) { Scoring.periodStats(snap.plans, today.startOfWeek(), today.endOfWeek(), today) }
-    val month = remember(snap) { Scoring.periodStats(snap.plans, today.startOfMonth(), today, today) }
-    val all = remember(snap) { Scoring.periodStats(snap.plans, LocalDate.MIN.plusDays(1), today, today) }
+    val week = remember(snap) { Scoring.periodStats(snap.plans, today.startOfWeek(), today.endOfWeek(), today, snap.periods) }
+    val month = remember(snap) { Scoring.periodStats(snap.plans, today.startOfMonth(), today.endOfMonth(), today, snap.periods) }
+    val all = remember(snap) { Scoring.periodStats(snap.plans, LocalDate.MIN.plusDays(1), LocalDate.MAX.minusDays(1), today, snap.periods) }
     val weeklySeries = remember(snap) { weeklyScores(snap, 12) }
     val daily = remember(snap) { (29 downTo 0).map { today.minusDays(it.toLong()) }.map { d -> snap.plans[d]?.score } }
     val goalRates = remember(snap) { goalRates(snap) }
@@ -156,7 +157,7 @@ private fun weeklyScores(snap: EngineSnapshot, weeks: Int): List<WeekPoint> {
     val thisWeek = snap.today.startOfWeek()
     return (weeks - 1 downTo 0).map { i ->
         val start = thisWeek.minusWeeks(i.toLong())
-        WeekPoint(start, Scoring.periodScore(snap.plans, start, start.plusDays(6), snap.today))
+        WeekPoint(start, Scoring.periodScore(snap.plans, start, start.plusDays(6), snap.today, snap.periods))
     }
 }
 
@@ -166,7 +167,10 @@ private fun goalRates(snap: EngineSnapshot): List<Triple<String, Int, Double>> {
         .filter { it.kind == GoalKind.RECURRING && !it.isArchived }
         .mapNotNull { g ->
             val v = GoalsViewModel.currentVersion(snap.history, g.id) ?: return@mapNotNull null
-            val rate = Scoring.goalRate(snap.plans, g.id, from, snap.today, snap.today) ?: return@mapNotNull null
+            val rate = if (v.isPeriodic) {
+                snap.periods.filter { it.goal.id == g.id && it.end >= from && it.start <= snap.today }.map { it.credit }
+                    .takeIf { it.isNotEmpty() }?.average() ?: return@mapNotNull null
+            } else Scoring.goalRate(snap.plans, g.id, from, snap.today, snap.today) ?: return@mapNotNull null
             Triple("${v.emoji} ${v.title}", v.colorIndex, rate)
         }
         .sortedBy { it.third }

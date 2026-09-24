@@ -1,11 +1,13 @@
 package com.nhowe.ember.data.db.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
 import com.nhowe.ember.core.time.toEpochDayInt
 import com.nhowe.ember.core.time.toLocalDate
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.Completion
 import com.nhowe.ember.domain.model.DayOverride
 import com.nhowe.ember.domain.model.Goal
@@ -49,16 +51,18 @@ data class GoalVersionEntity(
     val weekdayMask: Int,
     val weight: Int,
     val note: String?,
+    @ColumnInfo(defaultValue = "DAILY") val cadence: String = "DAILY",
 ) {
     fun toDomain() = GoalVersion(
         id, goalId, validFrom.toLocalDate(), validTo?.toLocalDate(), title, emoji, colorIndex,
         GoalType.valueOf(type), targetCount, unit, weekdayMask, weight, note,
+        runCatching { Cadence.valueOf(cadence) }.getOrDefault(Cadence.DAILY),
     )
 
     companion object {
         fun from(v: GoalVersion) = GoalVersionEntity(
             v.id, v.goalId, v.validFrom.toEpochDayInt(), v.validTo?.toEpochDayInt(), v.title, v.emoji, v.colorIndex,
-            v.type.name, v.targetCount, v.unit, v.weekdayMask, v.weight, v.note,
+            v.type.name, v.targetCount, v.unit, v.weekdayMask, v.weight, v.note, v.cadence.name,
         )
     }
 }

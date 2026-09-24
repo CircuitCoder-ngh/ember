@@ -52,7 +52,7 @@ fun GoalActionsSheet(
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 modifier = Modifier.fillMaxWidth().clickable(onClick = onEdit),
             )
-            ListItem(
+            if (!goal.version.isPeriodic) ListItem(
                 headlineContent = { Text("Skip for ${if (date == LocalDate.now()) "today" else date}") },
                 supportingContent = { Text("Removed from this day only, no penalty") },
                 leadingContent = { Icon(Icons.Rounded.SkipNext, contentDescription = null) },

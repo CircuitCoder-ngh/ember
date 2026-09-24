@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nhowe.ember.core.time.ALL_WEEKDAYS
 import com.nhowe.ember.di.LocalAppContainer
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.GoalType
 import com.nhowe.ember.ui.components.SectionLabel
 import com.nhowe.ember.ui.theme.GoalPalette
@@ -96,6 +97,8 @@ fun GoalEditorScreen(goalId: String?, oneOffDate: LocalDate?, onClose: () -> Uni
                 when {
                     !vm.isNew -> "Edit goal"
                     vm.isOneOff -> "One-off goal"
+                    vm.cadence == Cadence.WEEKLY -> "New weekly goal"
+                    vm.cadence == Cadence.MONTHLY -> "New monthly goal"
                     else -> "New daily goal"
                 },
                 style = MaterialTheme.typography.titleLarge,
@@ -152,22 +155,40 @@ fun GoalEditorScreen(goalId: String?, oneOffDate: LocalDate?, onClose: () -> Uni
                 }
             }
 
+            if (!vm.isOneOff) {
+                SectionLabel("Repeats")
+                SingleChoiceSegmentedButtonRow(Modifier.padding(horizontal = 20.dp).fillMaxWidth()) {
+                    listOf(Cadence.DAILY to "Daily", Cadence.WEEKLY to "Weekly", Cadence.MONTHLY to "Monthly").forEachIndexed { i, (c, label) ->
+                        SegmentedButton(selected = vm.cadence == c, onClick = { vm.cadence = c; container.haptics.tick() }, shape = SegmentedButtonDefaults.itemShape(i, 3), label = { Text(label) })
+                    }
+                }
+                if (vm.isPeriodic) {
+                    Text(
+                        "Log progress on any day. It counts toward your ${if (vm.cadence == Cadence.WEEKLY) "week" else "month"} score, not the daily streak.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                    )
+                }
+            }
+
             SectionLabel("Type")
             SingleChoiceSegmentedButtonRow(Modifier.padding(horizontal = 20.dp).fillMaxWidth()) {
-                SegmentedButton(selected = vm.type == GoalType.CHECK, onClick = { vm.type = GoalType.CHECK }, shape = SegmentedButtonDefaults.itemShape(0, 2), label = { Text("Check off") })
+                SegmentedButton(selected = vm.type == GoalType.CHECK, onClick = { vm.type = GoalType.CHECK }, shape = SegmentedButtonDefaults.itemShape(0, 2), label = { Text(if (vm.isPeriodic) "Times" else "Check off") })
                 SegmentedButton(selected = vm.type == GoalType.QUANTITY, onClick = { vm.type = GoalType.QUANTITY }, shape = SegmentedButtonDefaults.itemShape(1, 2), label = { Text("Count up") })
             }
-            if (vm.type == GoalType.QUANTITY) {
+            if (vm.type == GoalType.QUANTITY || vm.isPeriodic) {
+                val per = if (vm.cadence == Cadence.WEEKLY) "per week" else "per month"
                 Row(Modifier.padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     OutlinedTextField(
                         value = vm.target,
                         onValueChange = { vm.target = it.filter { ch -> ch.isDigit() }.take(5) },
-                        label = { Text("Target") },
+                        label = { Text(if (!vm.isPeriodic) "Target" else if (vm.type == GoalType.CHECK) "Times $per" else "Target $per") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f),
                     )
-                    OutlinedTextField(
+                    if (vm.type == GoalType.QUANTITY) OutlinedTextField(
                         value = vm.unit,
                         onValueChange = { vm.unit = it.take(16) },
                         label = { Text("Unit (pages, glasses…)") },
@@ -175,7 +196,7 @@ fun GoalEditorScreen(goalId: String?, oneOffDate: LocalDate?, onClose: () -> Uni
                         modifier = Modifier.weight(1.6f),
                     )
                 }
-                Text(
+                if (vm.type == GoalType.QUANTITY) Text(
                     "Partial progress counts: 12 of 20 is 60% of this goal.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -189,7 +210,7 @@ fun GoalEditorScreen(goalId: String?, oneOffDate: LocalDate?, onClose: () -> Uni
                     Text(vm.oneOffDate.format(DateTimeFormatter.ofPattern("EEEE, MMM d, yyyy")), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                     TextButton(onClick = { showDate = true }) { Text("Change") }
                 }
-            } else {
+            } else if (!vm.isPeriodic) {
                 SectionLabel("Days")
                 Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     DayOfWeek.entries.forEach { day ->

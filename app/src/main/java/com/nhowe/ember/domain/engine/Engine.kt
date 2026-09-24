@@ -20,7 +20,8 @@ object Engine {
         val plans = DayPlanResolver.resolveRange(start, today, history)
         val scores = plans.mapValues { it.value.score }.toSortedMap()
         val streak = StreakEngine.compute(scores, today, settings.streakThreshold)
-        val xp = XpEngine.compute(plans, streak.streakByDay, today)
+        val periods = PeriodResolver.resolveRange(start, today, history)
+        val xp = XpEngine.compute(plans, streak.streakByDay, today, PeriodResolver.xpByDay(periods))
         val badges = BadgeEngine.compute(plans, streak, xp, today)
 
         val events = ArrayList<CelebrationEvent>()
@@ -43,6 +44,7 @@ object Engine {
             xp = xp,
             badges = badges,
             pendingCelebrations = events.filter { it.key !in shownCelebrationKeys },
+            periods = periods,
         )
     }
 }

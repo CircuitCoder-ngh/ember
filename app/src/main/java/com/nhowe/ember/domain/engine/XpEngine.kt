@@ -33,12 +33,12 @@ object XpEngine {
 
     fun titleFor(level: Int): String = TITLES.last { level >= it.first }.second
 
-    fun compute(plans: Map<LocalDate, DayPlan>, streakByDay: Map<LocalDate, Int>, today: LocalDate): XpState {
+    fun compute(plans: Map<LocalDate, DayPlan>, streakByDay: Map<LocalDate, Int>, today: LocalDate, extraXpByDay: Map<LocalDate, Int> = emptyMap()): XpState {
         val xpByDay = LinkedHashMap<LocalDate, Int>()
         var total = 0
         for (plan in plans.values.sortedBy { it.date }) {
             if (plan.date > today) continue
-            val xp = dayXp(plan, streakByDay[plan.date] ?: 0)
+            val xp = dayXp(plan, streakByDay[plan.date] ?: 0) + (extraXpByDay[plan.date] ?: 0)
             if (xp > 0) xpByDay[plan.date] = xp
             total += xp
         }

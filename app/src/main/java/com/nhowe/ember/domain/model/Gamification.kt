@@ -72,6 +72,10 @@ data class EngineSnapshot(
     val xp: XpState,
     val badges: Map<Badge, LocalDate>,
     val pendingCelebrations: List<CelebrationEvent>,
+    val periods: List<PeriodGoalProgress> = emptyList(),
 ) {
+    fun periodFor(goalId: String, date: LocalDate): PeriodGoalProgress? =
+        periods.firstOrNull { it.goal.id == goalId && it.contains(date) }
+
     val todayPlan: DayPlan get() = plans[today] ?: DayPlan(today, emptyList())
 }

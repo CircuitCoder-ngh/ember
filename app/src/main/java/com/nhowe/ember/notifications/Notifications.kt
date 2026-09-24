@@ -25,6 +25,10 @@ object Notifications {
             description = "A nudge when today's goals are still open"
         }
         manager.createNotificationChannel(channel)
+        val hourly = NotificationChannel(ProgressNotifier.CHANNEL, "Hourly progress card", NotificationManager.IMPORTANCE_LOW).apply {
+            description = "A silent card with what's left today, refreshed every hour"
+        }
+        manager.createNotificationChannel(hourly)
     }
 
     fun canPost(context: Context): Boolean =

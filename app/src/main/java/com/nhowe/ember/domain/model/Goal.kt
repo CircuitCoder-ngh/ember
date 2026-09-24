@@ -7,6 +7,9 @@ enum class GoalKind { RECURRING, ONE_OFF }
 
 enum class GoalType { CHECK, QUANTITY }
 
+/** How often the goal resets. DAILY goals score each day; WEEKLY/MONTHLY goals have a target per period. */
+enum class Cadence { DAILY, WEEKLY, MONTHLY }
+
 /** Stable identity of a goal. Everything the user can edit lives on [GoalVersion]. */
 data class Goal(
     val id: String,
@@ -37,13 +40,16 @@ data class GoalVersion(
     val weekdayMask: Int,
     val weight: Int = 1,
     val note: String? = null,
+    val cadence: Cadence = Cadence.DAILY,
 ) {
+    val isPeriodic: Boolean get() = cadence != Cadence.DAILY
+
     fun covers(date: LocalDate): Boolean =
         date >= validFrom && (validTo == null || date <= validTo)
 
     fun scheduledOn(date: LocalDate, goal: Goal): Boolean = when (goal.kind) {
         GoalKind.ONE_OFF -> goal.oneOffDate == date
-        GoalKind.RECURRING -> weekdayMask.hasWeekday(date.dayOfWeek)
+        GoalKind.RECURRING -> isPeriodic || weekdayMask.hasWeekday(date.dayOfWeek)
     }
 
     val target: Int get() = (targetCount ?: 1).coerceAtLeast(1)

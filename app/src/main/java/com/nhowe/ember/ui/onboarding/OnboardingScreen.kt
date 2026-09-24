@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nhowe.ember.di.LocalAppContainer
+import com.nhowe.ember.domain.model.Cadence
 import com.nhowe.ember.domain.model.GoalType
 import com.nhowe.ember.ui.components.FlameMascot
 import com.nhowe.ember.ui.components.FlameState
@@ -180,9 +181,13 @@ private fun Starters(vm: OnboardingViewModel) {
                     Text(starter.draft.title, style = MaterialTheme.typography.titleMedium)
                     val sub = buildString {
                         if (starter.draft.type == GoalType.QUANTITY) append("${starter.draft.targetCount} ${starter.draft.unit}")
-                        when (starter.draft.weekdayMask) {
-                            0b0011111 -> append(if (isNotEmpty()) " · weekdays" else "Weekdays")
-                            0b1100000 -> append(if (isNotEmpty()) " · weekends" else "Weekends")
+                        when (starter.draft.cadence) {
+                            Cadence.WEEKLY -> append("${starter.draft.targetCount}× a week")
+                            Cadence.MONTHLY -> append("${starter.draft.targetCount}× a month")
+                            Cadence.DAILY -> when (starter.draft.weekdayMask) {
+                                0b0011111 -> append(if (isNotEmpty()) " · weekdays" else "Weekdays")
+                                0b1100000 -> append(if (isNotEmpty()) " · weekends" else "Weekends")
+                            }
                         }
                     }
                     if (sub.isNotEmpty()) Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
