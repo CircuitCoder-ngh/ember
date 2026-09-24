@@ -28,6 +28,7 @@ class SettingsRepository(context: Context) {
         val hourlyEnabled = booleanPreferencesKey("hourly_enabled")
         val hourlyStart = intPreferencesKey("hourly_start_minutes")
         val hourlyEnd = intPreferencesKey("hourly_end_minutes")
+        val hourlyAlert = booleanPreferencesKey("hourly_alert")
         val haptics = booleanPreferencesKey("haptics")
         val sound = booleanPreferencesKey("sound")
         val theme = stringPreferencesKey("theme")
@@ -46,6 +47,7 @@ class SettingsRepository(context: Context) {
             hourlyEnabled = p[Keys.hourlyEnabled] ?: false,
             hourlyStart = (p[Keys.hourlyStart] ?: (8 * 60)).let { LocalTime.of(it / 60, it % 60) },
             hourlyEnd = (p[Keys.hourlyEnd] ?: (22 * 60)).let { LocalTime.of(it / 60, it % 60) },
+            hourlyAlert = p[Keys.hourlyAlert] ?: false,
             hapticsEnabled = p[Keys.haptics] ?: true,
             soundEnabled = p[Keys.sound] ?: false,
             themeMode = p[Keys.theme]?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() } ?: ThemeMode.DARK,
@@ -61,6 +63,7 @@ class SettingsRepository(context: Context) {
     suspend fun setReminderEnabled(enabled: Boolean) = store.edit { it[Keys.reminderEnabled] = enabled }
     suspend fun setReminderTime(time: LocalTime) = store.edit { it[Keys.reminderMinutes] = time.hour * 60 + time.minute }
     suspend fun setHourlyEnabled(enabled: Boolean) = store.edit { it[Keys.hourlyEnabled] = enabled }
+    suspend fun setHourlyAlert(alert: Boolean) = store.edit { it[Keys.hourlyAlert] = alert }
     suspend fun setHourlyWindow(start: LocalTime, end: LocalTime) = store.edit {
         it[Keys.hourlyStart] = start.hour * 60 + start.minute
         it[Keys.hourlyEnd] = end.hour * 60 + end.minute
@@ -81,6 +84,7 @@ class SettingsRepository(context: Context) {
         it[Keys.hourlyEnabled] = s.hourlyEnabled
         it[Keys.hourlyStart] = s.hourlyStart.hour * 60 + s.hourlyStart.minute
         it[Keys.hourlyEnd] = s.hourlyEnd.hour * 60 + s.hourlyEnd.minute
+        it[Keys.hourlyAlert] = s.hourlyAlert
         it[Keys.haptics] = s.hapticsEnabled
         it[Keys.sound] = s.soundEnabled
         it[Keys.theme] = s.themeMode.name

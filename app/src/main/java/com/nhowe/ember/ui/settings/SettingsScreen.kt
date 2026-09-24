@@ -175,6 +175,16 @@ fun SettingsScreen(onBack: () -> Unit) {
                     if (on && Build.VERSION.SDK_INT >= 33) { pendingToggle = "hourly"; notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS) }
                     else vm.setHourlyEnabled(on)
                 }
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                    SegmentedButton(selected = !s.hourlyAlert, onClick = { vm.setHourlyAlert(false, context) }, shape = SegmentedButtonDefaults.itemShape(0, 2), label = { Text("Silent") })
+                    SegmentedButton(selected = s.hourlyAlert, onClick = { vm.setHourlyAlert(true, context) }, shape = SegmentedButtonDefaults.itemShape(1, 2), label = { Text("Buzz each hour") })
+                }
+                Text(
+                    if (s.hourlyAlert) "Sounds and vibrates on the hourly refresh only. Checking things off updates it quietly."
+                    else "Sits in the shade without a sound. Swipe down to see what's left.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Active between", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                     TextButton(onClick = { showWindow = "start" }) { Text(s.hourlyStart.format(DateTimeFormatter.ofPattern("h:mm a"))) }

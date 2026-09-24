@@ -9,6 +9,7 @@ import com.nhowe.ember.di.AppContainer
 import com.nhowe.ember.domain.model.EngineSnapshot
 import com.nhowe.ember.domain.model.Settings
 import com.nhowe.ember.domain.model.ThemeMode
+import com.nhowe.ember.notifications.ProgressNotifier
 import java.time.Instant
 import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,12 @@ class SettingsViewModel(private val c: AppContainer) : ViewModel() {
     fun setHourlyEnabled(b: Boolean) = launch {
         c.settingsRepository.setHourlyEnabled(b)
         c.reminderScheduler.sync(c.settingsRepository.settings.first())
+    }
+
+    fun setHourlyAlert(alert: Boolean, context: Context) = launch {
+        c.settingsRepository.setHourlyAlert(alert)
+        val settings = c.settingsRepository.settings.first()
+        snapshot.value?.let { ProgressNotifier.repost(context.applicationContext, it, settings) }
     }
 
     fun setHourlyWindow(start: LocalTime, end: LocalTime) = launch {

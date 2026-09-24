@@ -18,7 +18,7 @@ class HourlyReceiver : BroadcastReceiver() {
             try {
                 val settings = container.settingsRepository.settings.first()
                 val snapshot = withTimeoutOrNull(8_000) { container.engineStore.snapshot.filterNotNull().first() }
-                if (snapshot != null) ProgressNotifier.sync(context, snapshot, settings) else ProgressNotifier.clear(context)
+                if (snapshot != null) ProgressNotifier.sync(context, snapshot, settings, alert = true) else ProgressNotifier.clear(context)
             } finally {
                 pending.finish()
             }

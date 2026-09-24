@@ -29,6 +29,10 @@ object Notifications {
             description = "A silent card with what's left today, refreshed every hour"
         }
         manager.createNotificationChannel(hourly)
+        val hourlyAlert = NotificationChannel(ProgressNotifier.CHANNEL_ALERT, "Hourly progress card (alerting)", NotificationManager.IMPORTANCE_DEFAULT).apply {
+            description = "The hourly card with sound and vibration each hour"
+        }
+        manager.createNotificationChannel(hourlyAlert)
     }
 
     fun canPost(context: Context): Boolean =

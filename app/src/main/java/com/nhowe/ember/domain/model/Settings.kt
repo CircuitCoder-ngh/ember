@@ -12,6 +12,8 @@ data class Settings(
     val hourlyEnabled: Boolean = false,
     val hourlyStart: LocalTime = LocalTime.of(8, 0),
     val hourlyEnd: LocalTime = LocalTime.of(22, 0),
+    /** false = silent card; true = the hourly refresh makes sound/vibration. */
+    val hourlyAlert: Boolean = false,
     val hapticsEnabled: Boolean = true,
     val soundEnabled: Boolean = false,
     val themeMode: ThemeMode = ThemeMode.DARK,

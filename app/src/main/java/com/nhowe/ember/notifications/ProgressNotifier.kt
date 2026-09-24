@@ -17,6 +17,7 @@ import kotlin.math.roundToInt
 /** The hourly "what's left today" card. Silent, replaced in place, gone once the day is done. */
 object ProgressNotifier {
     const val CHANNEL = "hourly_progress"
+    const val CHANNEL_ALERT = "hourly_progress_alert"
     private const val ID = 2001
 
     fun isWithinWindow(settings: Settings, now: LocalTime = LocalTime.now()): Boolean {
@@ -25,8 +26,12 @@ object ProgressNotifier {
         return if (start <= end) now >= start && now < end else now >= start || now < end
     }
 
-    /** Posts or refreshes the card, or clears it when nothing is left / outside the window / disabled. */
-    fun sync(context: Context, snapshot: EngineSnapshot, settings: Settings) {
+    /**
+     * Posts or refreshes the card, or clears it when nothing is left / outside the window / disabled.
+     * [alert] is true only on the hourly tick when the user chose the buzzing variant; live refreshes
+     * after a check-off are always quiet.
+     */
+    fun sync(context: Context, snapshot: EngineSnapshot, settings: Settings, alert: Boolean = false) {
         val manager = context.getSystemService(NotificationManager::class.java)
         if (!settings.hourlyEnabled || !isWithinWindow(settings) || !Notifications.canPost(context)) {
             manager.cancel(ID)
@@ -67,19 +72,26 @@ object ProgressNotifier {
             context, 1, Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val notification = NotificationCompat.Builder(context, CHANNEL)
+        val buzz = alert && settings.hourlyAlert
+        val notification = NotificationCompat.Builder(context, if (settings.hourlyAlert) CHANNEL_ALERT else CHANNEL)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(left.joinToString(" · ") { it.version.title }.ifEmpty { periodicLeft.joinToString(" · ") { it.version.title } })
             .setStyle(NotificationCompat.BigTextStyle().bigText(lines.joinToString("\n")))
             .setContentIntent(open)
-            .setOnlyAlertOnce(true)
-            .setSilent(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOnlyAlertOnce(!buzz)
+            .setSilent(!buzz)
+            .setPriority(if (settings.hourlyAlert) NotificationCompat.PRIORITY_DEFAULT else NotificationCompat.PRIORITY_LOW)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .build()
         manager.notify(ID, notification)
     }
 
     fun clear(context: Context) = context.getSystemService(NotificationManager::class.java).cancel(ID)
+
+    /** Re-post on the right channel after the silent/buzz choice changes. */
+    fun repost(context: Context, snapshot: EngineSnapshot, settings: Settings) {
+        clear(context)
+        sync(context, snapshot, settings)
+    }
 }

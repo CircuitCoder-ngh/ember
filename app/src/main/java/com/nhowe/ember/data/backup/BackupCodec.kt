@@ -52,6 +52,7 @@ data class SettingsJson(
     val hapticsEnabled: Boolean, val soundEnabled: Boolean, val themeMode: String, val dynamicColor: Boolean,
     val completedSinkToBottom: Boolean, val userName: String,
     val hourlyEnabled: Boolean = false, val hourlyStart: String = "08:00", val hourlyEnd: String = "22:00",
+    val hourlyAlert: Boolean = false,
 )
 
 object BackupCodec {
@@ -72,7 +73,7 @@ object BackupCodec {
                 settings.streakThreshold, settings.dayBoundaryHour, settings.reminderEnabled, settings.reminderTime.toString(),
                 settings.hapticsEnabled, settings.soundEnabled, settings.themeMode.name, settings.dynamicColor,
                 settings.completedSinkToBottom, settings.userName,
-                settings.hourlyEnabled, settings.hourlyStart.toString(), settings.hourlyEnd.toString(),
+                settings.hourlyEnabled, settings.hourlyStart.toString(), settings.hourlyEnd.toString(), settings.hourlyAlert,
             ),
         ),
     )
@@ -97,6 +98,7 @@ object BackupCodec {
             themeMode = runCatching { ThemeMode.valueOf(s.themeMode) }.getOrDefault(ThemeMode.DARK), dynamicColor = s.dynamicColor,
             onboardingDone = true, completedSinkToBottom = s.completedSinkToBottom, userName = s.userName,
             hourlyEnabled = s.hourlyEnabled, hourlyStart = LocalTime.parse(s.hourlyStart), hourlyEnd = LocalTime.parse(s.hourlyEnd),
+            hourlyAlert = s.hourlyAlert,
         )
         return history to settings
     }
