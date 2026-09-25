@@ -65,6 +65,9 @@ interface GoalVersionDao {
     @Query("DELETE FROM goal_version WHERE goalId = :goalId AND validFrom > :date")
     suspend fun deleteVersionsAfter(goalId: String, date: Int)
 
+    @Query("SELECT * FROM goal_version WHERE goalId = :goalId ORDER BY validFrom")
+    suspend fun allFor(goalId: String): List<GoalVersionEntity>
+
     @Query("DELETE FROM goal_version WHERE goalId = :goalId")
     suspend fun deleteAllFor(goalId: String)
 
@@ -142,6 +145,9 @@ interface ProgramDao {
 
     @Query("UPDATE program SET startDate = :start WHERE id = :id")
     suspend fun setStart(id: String, start: Int)
+
+    @Query("UPDATE program SET pauses = :pauses WHERE id = :id")
+    suspend fun setPauses(id: String, pauses: String)
 
     @Query("DELETE FROM program WHERE id = :id")
     suspend fun delete(id: String)

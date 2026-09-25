@@ -114,7 +114,7 @@ fun HomeScreen(
                 label = "tab",
             ) { current ->
                 when (current) {
-                    HomeTab.TODAY -> TodayScreen(onOpenSettings = onOpenSettings, onEditGoal = onEditGoal, onNewOneOff = onNewOneOff, onNewGoal = onNewGoal)
+                    HomeTab.TODAY -> TodayScreen(onOpenSettings = onOpenSettings, onEditGoal = onEditGoal, onNewOneOff = onNewOneOff, onNewGoal = onNewGoal, onBrowseTemplates = onBrowseTemplates)
                     HomeTab.CALENDAR -> CalendarScreen(onOpenSettings = onOpenSettings, onNewOneOff = onNewOneOff)
                     HomeTab.STATS -> StatsScreen(onOpenSettings = onOpenSettings)
                     HomeTab.GOALS -> GoalsScreen(onOpenSettings = onOpenSettings, onEditGoal = onEditGoal, onNewGoal = onNewGoal, onNewOneOff = onNewOneOff, onBrowseTemplates = onBrowseTemplates)

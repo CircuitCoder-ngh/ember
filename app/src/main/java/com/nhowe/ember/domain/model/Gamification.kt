@@ -102,7 +102,7 @@ data class EngineSnapshot(
     val programs: List<ProgramProgress> = emptyList(),
     val programBadges: List<EarnedBadge> = emptyList(),
 ) {
-    val activePrograms: List<ProgramProgress> get() = programs.filter { it.isActive && it.dayIndex >= 1 }
+    val activePrograms: List<ProgramProgress> get() = programs.filter { it.isActive }
     fun periodFor(goalId: String, date: LocalDate): PeriodGoalProgress? =
         periods.firstOrNull { it.goal.id == goalId && it.contains(date) }
 

@@ -37,6 +37,8 @@ fun ProgramTemplateCard(
     onExpand: () -> Unit,
     onStart: () -> Unit,
     modifier: Modifier = Modifier,
+    onExport: (() -> Unit)? = null,
+    onRemove: (() -> Unit)? = null,
 ) {
     val accent = MaterialTheme.colorScheme.tertiary
     Column(
@@ -55,7 +57,7 @@ fun ProgramTemplateCard(
             Column(Modifier.weight(1f)) {
                 Text(template.title, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "${template.weeks} weeks · ${template.goals.size} goal${if (template.goals.size == 1) "" else "s"} · ${template.graduation.icon} ${template.graduation.title} +${template.graduation.xp} XP" + if (template.strict) " · strict" else "",
+                    "${template.weeks} weeks · ${template.goals.size} goal${if (template.goals.size == 1) "" else "s"} · ${template.graduation.icon} ${template.graduation.title} +${template.graduation.xp} XP" + (if (template.strict) " · strict" else "") + (if (template.custom) " · imported" else "") + (if (template.season != null) " · seasonal" else ""),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -89,6 +91,10 @@ fun ProgramTemplateCard(
                     }
                 }
                 if (template.strict) Text("Strict: a missed day restarts the count at day 1.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 4.dp))
+                Row(Modifier.padding(top = 4.dp)) {
+                    if (onExport != null) androidx.compose.material3.TextButton(onClick = onExport) { Text("Share as file") }
+                    if (onRemove != null) androidx.compose.material3.TextButton(onClick = onRemove) { Text("Remove", color = MaterialTheme.colorScheme.error) }
+                }
             }
         }
     }

@@ -11,6 +11,7 @@ import com.nhowe.ember.domain.model.GoalType
 import com.nhowe.ember.domain.model.GoalVersion
 import com.nhowe.ember.domain.model.History
 import com.nhowe.ember.domain.model.OverrideKind
+import com.nhowe.ember.domain.model.PausePeriod
 import com.nhowe.ember.domain.model.Program
 import com.nhowe.ember.domain.model.Settings
 import com.nhowe.ember.domain.model.ThemeMode
@@ -55,6 +56,7 @@ data class ProgramJson(
     val id: String, val templateId: String, val title: String, val emoji: String, val startDate: String, val lengthDays: Int,
     val goalIds: List<String>, val strict: Boolean, val graduationTitle: String, val graduationIcon: String, val graduationXp: Int,
     val nextTemplateId: String?, val abandonedOn: String?,
+    val pauses: List<String> = emptyList(),
 )
 
 @Serializable
@@ -90,7 +92,8 @@ object BackupCodec {
             ),
             programs = history.programs.map {
                 ProgramJson(it.id, it.templateId, it.title, it.emoji, it.startDate.toString(), it.lengthDays, it.goalIds, it.strict,
-                    it.graduationTitle, it.graduationIcon, it.graduationXp, it.nextTemplateId, it.abandonedOn?.toString())
+                    it.graduationTitle, it.graduationIcon, it.graduationXp, it.nextTemplateId, it.abandonedOn?.toString(),
+                    it.pauses.map { p -> "${p.from}:${p.to ?: ""}" })
             },
         ),
     )
@@ -109,7 +112,8 @@ object BackupCodec {
             overrides = file.overrides.map { DayOverride(it.goalId, LocalDate.parse(it.date), OverrideKind.valueOf(it.kind)) },
             programs = file.programs.map {
                 Program(it.id, it.templateId, it.title, it.emoji, LocalDate.parse(it.startDate), it.lengthDays, it.goalIds, it.strict,
-                    it.graduationTitle, it.graduationIcon, it.graduationXp, it.nextTemplateId, it.abandonedOn?.let(LocalDate::parse))
+                    it.graduationTitle, it.graduationIcon, it.graduationXp, it.nextTemplateId, it.abandonedOn?.let(LocalDate::parse),
+                    it.pauses.map { p -> p.split(":").let { s -> PausePeriod(LocalDate.parse(s[0]), s.getOrNull(1)?.takeIf { x -> x.isNotEmpty() }?.let(LocalDate::parse)) } })
             },
         )
         val s = file.settings

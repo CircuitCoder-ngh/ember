@@ -42,7 +42,7 @@ fun ProgramCard(p: ProgramProgress, modifier: Modifier = Modifier, onMenu: (() -
         modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
-            .background(accent.copy(alpha = 0.12f))
+            .background(if (p.isPaused) MaterialTheme.ember.frozen.copy(alpha = 0.10f) else accent.copy(alpha = 0.12f))
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(14.dp),
     ) {
@@ -55,9 +55,11 @@ fun ProgramCard(p: ProgramProgress, modifier: Modifier = Modifier, onMenu: (() -
                 Text(p.program.title, style = MaterialTheme.typography.titleMedium)
                 Text(
                     buildString {
-                        if (strict) append("Day ${p.strictDay} unbroken · calendar day ${p.dayIndex} of ${p.program.lengthDays}")
-                        else append("Week ${p.week} of ${p.program.totalWeeks} · day ${p.dayIndex} of ${p.program.lengthDays}")
-                        p.adherence?.let { append(" · ${(it * 100).roundToInt()}%") }
+                        if (p.isPaused) append("Paused · day ${p.dayIndex} of ${p.program.lengthDays} so far")
+                        else if (p.dayIndex == 0) append("Starts ${p.program.startDate.format(java.time.format.DateTimeFormatter.ofPattern("EEEE, MMM d"))} · ${p.program.totalWeeks} weeks")
+                        else if (strict && !p.isPaused) append("Day ${p.strictDay} unbroken · calendar day ${p.dayIndex} of ${p.program.lengthDays}")
+                        else if (!p.isPaused) append("Week ${p.week} of ${p.program.totalWeeks} · day ${p.dayIndex} of ${p.program.lengthDays}")
+                        if (p.dayIndex > 0 && !p.isPaused) p.adherence?.let { append(" · ${(it * 100).roundToInt()}%") }
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -75,11 +77,18 @@ fun ProgramCard(p: ProgramProgress, modifier: Modifier = Modifier, onMenu: (() -
             trackColor = accent.copy(alpha = 0.18f),
             drawStopIndicator = {},
         )
-        if (strict && p.strictBrokenOn != null && p.strictDay == 0) {
+        if (p.isPaused) {
+            Text(
+                "Paused since ${p.program.openPause!!.from.format(java.time.format.DateTimeFormatter.ofPattern("MMM d"))}. Its goals are off your plan; resume from the menu when you're back.",
+                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.ember.frozen, modifier = Modifier.padding(top = 6.dp),
+            )
+        } else if (strict && p.strictBrokenOn != null && p.strictDay == 0) {
             Text(
                 "Missed a goal on ${p.strictBrokenOn}. Strict rules: the count restarts. Use the menu to start over from today.",
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.ember.miss, modifier = Modifier.padding(top = 6.dp),
             )
+        } else if (p.dayIndex == 0) {
+            Text("Its goals appear on your plan from day one.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
         } else if (p.daysLeft > 0) {
             Text(
                 if (p.daysLeft == 1) "Last day tomorrow." else "${p.daysLeft} days to go.",

@@ -9,6 +9,7 @@ import com.nhowe.ember.data.templates.ProgramGoalSpec
 import com.nhowe.ember.data.templates.ProgramTemplate
 import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.domain.model.GoalVersion
+import com.nhowe.ember.domain.model.PausePeriod
 import com.nhowe.ember.domain.model.Program
 import java.time.LocalDate
 import java.util.UUID
@@ -46,6 +47,39 @@ class ProgramRepository(private val db: EmberDatabase) {
             db.goalDao().setArchived(goalId, System.currentTimeMillis())
         }
         db.programDao().setAbandoned(program.id, lastInt)
+    }
+
+    /** Pause from today: its goals disappear from the plan until resumed; nothing else changes yet. */
+    suspend fun pause(program: Program, today: LocalDate) {
+        if (program.isPaused) return
+        db.programDao().setPauses(program.id, ProgramEntity.encodePauses(program.pauses + PausePeriod(today, null)))
+    }
+
+    /**
+     * Resume today: the open pause closes yesterday and every phase that had not finished before the pause
+     * is pushed forward by the paused span, so the plan continues exactly where it left off.
+     */
+    suspend fun resume(program: Program, today: LocalDate) {
+        val open = program.openPause ?: return
+        val span = open.days(today.minusDays(1))   // the resume day is active again
+        if (open.from < program.startDate) {
+            // Paused before day one: the whole plan simply starts later. No paused days to remember.
+            db.programDao().setPauses(program.id, ProgramEntity.encodePauses(program.pauses.filter { it.to != null }))
+            if (span > 0) db.programDao().setStart(program.id, program.startDate.toEpochDayInt() + span)
+        } else {
+            val closed = program.pauses.map { if (it.to == null) PausePeriod(it.from, today.minusDays(1)) else it }
+            db.programDao().setPauses(program.id, ProgramEntity.encodePauses(closed))
+        }
+        if (span <= 0) return
+        val pauseStart = open.from.toEpochDayInt()
+        for (goalId in program.goalIds) {
+            for (v in db.goalVersionDao().allFor(goalId)) {
+                when {
+                    v.validFrom >= pauseStart -> db.goalVersionDao().upsert(v.copy(validFrom = v.validFrom + span, validTo = v.validTo?.plus(span)))
+                    v.validTo != null && v.validTo >= pauseStart -> db.goalVersionDao().upsert(v.copy(validTo = v.validTo + span))
+                }
+            }
+        }
     }
 
     /** Strict programs: start over from today. Past completions remain in history. */

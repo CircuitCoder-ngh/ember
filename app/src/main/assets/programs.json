@@ -1156,6 +1156,155 @@
       }
      ]
     }
+   ],
+   "season": {
+    "from": "10-18",
+    "to": "11-07"
+   }
+  },
+  {
+   "id": "dry-january",
+   "category": "seasonal",
+   "emoji": "🚱",
+   "title": "Dry January",
+   "blurb": "Thirty-one alcohol-free days to start the year. Streaks were made for this.",
+   "lengthDays": 31,
+   "season": {
+    "from": "12-20",
+    "to": "01-31"
+   },
+   "graduation": {
+    "title": "Dry January",
+    "icon": "🚱",
+    "xp": 400
+   },
+   "goals": [
+    {
+     "key": "af",
+     "title": "Alcohol-free",
+     "emoji": "🚱",
+     "colorIndex": 3,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "water",
+     "title": "Drink water",
+     "emoji": "💧",
+     "colorIndex": 3,
+     "type": "QUANTITY",
+     "cadence": "DAILY",
+     "target": 8,
+     "unit": "glasses",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sober-october",
+   "category": "seasonal",
+   "emoji": "🍂",
+   "title": "Sober October",
+   "blurb": "An alcohol-free October, with a walk in the autumn air most days.",
+   "lengthDays": 31,
+   "season": {
+    "from": "09-15",
+    "to": "10-31"
+   },
+   "graduation": {
+    "title": "Sober October",
+    "icon": "🍂",
+    "xp": 400
+   },
+   "goals": [
+    {
+     "key": "af",
+     "title": "Alcohol-free",
+     "emoji": "🚱",
+     "colorIndex": 3,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "walk",
+     "title": "Walk outside",
+     "emoji": "🍂",
+     "colorIndex": 9,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "target": 5,
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "forty-days",
+   "category": "seasonal",
+   "emoji": "🕯️",
+   "title": "40 days of giving up",
+   "blurb": "Give one thing up for forty days and add a daily moment of reflection. Fits the weeks before Easter.",
+   "lengthDays": 40,
+   "season": {
+    "from": "01-25",
+    "to": "03-10"
+   },
+   "graduation": {
+    "title": "Forty Days",
+    "icon": "🕯️",
+    "xp": 450
+   },
+   "goals": [
+    {
+     "key": "give",
+     "title": "Went without it today",
+     "emoji": "🚫",
+     "colorIndex": 6,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ],
+     "note": "Decide what you're giving up before day one"
+    },
+    {
+     "key": "reflect",
+     "title": "Prayer or reflection",
+     "emoji": "🕯️",
+     "colorIndex": 1,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
    ]
   }
  ]

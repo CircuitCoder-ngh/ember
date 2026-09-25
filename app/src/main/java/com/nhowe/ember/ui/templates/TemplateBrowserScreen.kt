@@ -50,6 +50,12 @@ import com.nhowe.ember.di.LocalAppContainer
 import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.ui.goals.GoalsViewModel
 import kotlinx.coroutines.launch
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.nhowe.ember.ui.components.SectionLabel
 
 /** Browse the bundle library and add one to your goals. Goals you already have are skipped by title. */
 @Composable
@@ -65,6 +71,28 @@ fun TemplateBrowserScreen(onBack: () -> Unit) {
     var startToday by remember { mutableStateOf(false) }
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val custom by repo.customPrograms.collectAsStateWithLifecycle()
+    val today = container.today.value
+    var pendingExport by remember { mutableStateOf<ProgramTemplate?>(null) }
+    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        val t = pendingExport; pendingExport = null
+        if (uri != null && t != null) scope.launch {
+            runCatching { withContext(Dispatchers.IO) { context.contentResolver.openOutputStream(uri, "wt")?.use { it.write(repo.exportProgram(t).toByteArray()) } } }
+            snackbar.showSnackbar("Saved ${t.title} as a file. Send it to anyone with Ember.")
+        }
+    }
+    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) scope.launch {
+            val text = runCatching { withContext(Dispatchers.IO) { context.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } } }.getOrNull()
+            val result = if (text == null) Result.failure(IllegalStateException("Could not read the file")) else repo.importPrograms(text)
+            result.onSuccess { list -> container.haptics.success(); snackbar.showSnackbar("Imported ${list.joinToString { it.title }}. Find it under Programs.") }
+                .onFailure { container.haptics.heavy(); snackbar.showSnackbar("Couldn't import: ${it.message}") }
+        }
+    }
+    val builtInPrograms = repo.programLibrary.programs
+    val openSeasonTemplates = repo.templates.filter { it.season?.isOpen(today) == true }
+    val openSeasonPrograms = builtInPrograms.filter { it.season?.isOpen(today) == true }
 
     val history = snapshot?.history
     val activeDaily = history?.goals?.count { g ->
@@ -116,22 +144,70 @@ fun TemplateBrowserScreen(onBack: () -> Unit) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp)) {
                 if (showPrograms) {
                     val activeTemplateIds = snapshot?.activePrograms?.map { it.program.templateId }?.toSet() ?: emptySet()
+                    if (custom.isNotEmpty() && category == null) {
+                        Text("IMPORTED", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(vertical = 6.dp))
+                        custom.forEach { t ->
+                            ProgramTemplateCard(
+                                template = t, expanded = expanded == t.id, enrolled = t.id in activeTemplateIds,
+                                onExpand = { expanded = if (expanded == t.id) null else t.id },
+                                onStart = { startToday = false; enrol = t },
+                                modifier = Modifier.padding(vertical = 5.dp),
+                                onExport = { pendingExport = t; exportLauncher.launch("ember-program-${t.id}.json") },
+                                onRemove = { repo.removeCustom(t.id); scope.launch { snackbar.showSnackbar("Removed ${t.title}.") } },
+                            )
+                        }
+                        Spacer(Modifier.height(10.dp))
+                    }
+                    if (openSeasonPrograms.isNotEmpty() && category == null) {
+                        Text("RIGHT NOW", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(vertical = 6.dp))
+                        openSeasonPrograms.forEach { t ->
+                            ProgramTemplateCard(
+                                template = t, expanded = expanded == t.id, enrolled = t.id in activeTemplateIds,
+                                onExpand = { expanded = if (expanded == t.id) null else t.id },
+                                onStart = { startToday = false; enrol = t },
+                                modifier = Modifier.padding(vertical = 5.dp),
+                                onExport = { pendingExport = t; exportLauncher.launch("ember-program-${t.id}.json") },
+                            )
+                        }
+                        Spacer(Modifier.height(10.dp))
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Have a program file from a coach or friend?", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+                        TextButton(onClick = { importLauncher.launch(arrayOf("application/json", "text/plain", "*/*")) }) { Text("Import file") }
+                    }
                     Text(
                         "A program changes its goals week by week and ends with a badge. One at a time works best.",
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 6.dp),
                     )
-                    repo.programs.filter { category == null || it.category == category }.forEach { t ->
-                        ProgramTemplateCard(
-                            template = t, expanded = expanded == t.id, enrolled = t.id in activeTemplateIds,
-                            onExpand = { expanded = if (expanded == t.id) null else t.id },
-                            onStart = { startToday = false; enrol = t },
-                            modifier = Modifier.padding(vertical = 5.dp),
-                        )
-                    }
+                    builtInPrograms
+                        .filter { category == null || it.category == category }
+                        .filter { t -> t.season == null || category == "seasonal" }
+                        .forEach { t ->
+                            ProgramTemplateCard(
+                                template = t, expanded = expanded == t.id, enrolled = t.id in activeTemplateIds,
+                                onExpand = { expanded = if (expanded == t.id) null else t.id },
+                                onStart = { startToday = false; enrol = t },
+                                modifier = Modifier.padding(vertical = 5.dp),
+                                onExport = { pendingExport = t; exportLauncher.launch("ember-program-${t.id}.json") },
+                            )
+                        }
+                    if (category == "seasonal") Text("Seasonal programs open at their time of year and show under Right now.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 6.dp))
                     Spacer(Modifier.height(24.dp))
                     return@Column
                 }
-                repo.templates.filter { category == null || it.category == category }.forEach { t ->
+                if (openSeasonTemplates.isNotEmpty() && category == null) {
+                    Text("RIGHT NOW", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(vertical = 6.dp))
+                    openSeasonTemplates.forEach { t ->
+                        val alreadyHave = t.goals.all { it.title in activeTitles }
+                        TemplateCard(
+                            template = t, selected = alreadyHave, expanded = expanded == t.id,
+                            onToggle = { if (!alreadyHave) tryAdd(t) }, onExpand = { expanded = if (expanded == t.id) null else t.id },
+                            modifier = Modifier.padding(vertical = 5.dp), actionLabel = if (alreadyHave) "Added" else "Add",
+                        )
+                    }
+                    Spacer(Modifier.height(10.dp))
+                }
+                repo.templates.filter { category == null || it.category == category }.filter { it.season == null || category == "seasonal" }.forEach { t ->
                     val alreadyHave = t.goals.all { it.title in activeTitles }
                     TemplateCard(
                         template = t,

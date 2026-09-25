@@ -42,6 +42,33 @@ data class ProgramGoalSpec(
     )
 }
 
+/** A yearly window, "MM-dd" to "MM-dd", which may wrap the year end. */
+@Serializable
+data class SeasonWindow(val from: String, val to: String) {
+    private fun md(s: String): Pair<Int, Int> = s.split("-").let { it[0].toInt() to it[1].toInt() }
+    private fun key(m: Int, d: Int) = m * 100 + d
+
+    fun isOpen(date: java.time.LocalDate): Boolean {
+        val (fm, fd) = md(from); val (tm, td) = md(to)
+        val k = key(date.monthValue, date.dayOfMonth); val a = key(fm, fd); val b = key(tm, td)
+        return if (a <= b) k in a..b else k >= a || k <= b
+    }
+
+    /** The next opening date on or after [date]. */
+    fun nextOpening(date: java.time.LocalDate): java.time.LocalDate {
+        val (fm, fd) = md(from)
+        val thisYear = java.time.LocalDate.of(date.year, fm, fd)
+        return if (thisYear >= date) thisYear else thisYear.plusYears(1)
+    }
+
+    /** A stable key for "seen this season" bookkeeping. */
+    fun seasonKey(date: java.time.LocalDate): String {
+        val (fm, fd) = md(from)
+        val opened = if (isOpen(date) && key(date.monthValue, date.dayOfMonth) < key(fm, fd)) date.year - 1 else date.year
+        return "$opened"
+    }
+}
+
 @Serializable
 data class GraduationSpec(val title: String, val icon: String = "🏅", val xp: Int = 300)
 
@@ -57,6 +84,8 @@ data class ProgramTemplate(
     val graduation: GraduationSpec,
     val strict: Boolean = false,
     val next: String? = null,
+    val season: SeasonWindow? = null,
+    val custom: Boolean = false,
 ) {
     val weeks: Int get() = (lengthDays + 6) / 7
     val hasPeriodic: Boolean get() = goals.any { it.isPeriodic }

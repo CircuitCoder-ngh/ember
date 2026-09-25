@@ -1,101 +1,567 @@
 {
   "version": 1,
   "categories": [
-    { "id": "everyday", "title": "Everyday basics", "emoji": "☀️", "blurb": "Simple habits most good days share." },
-    { "id": "fitness",  "title": "Fitness",         "emoji": "🏃", "blurb": "Move more, get stronger, sleep better." },
-    { "id": "mind",     "title": "Mind",            "emoji": "🧘", "blurb": "Calm, focus and rest." },
-    { "id": "learning", "title": "Learning",        "emoji": "📚", "blurb": "Read, study, practise a skill." },
-    { "id": "creative", "title": "Creative",        "emoji": "🎨", "blurb": "Make something most days." },
-    { "id": "money",    "title": "Money & home",    "emoji": "🏠", "blurb": "Spend less, tidy up, feel in control." },
-    { "id": "faith",    "title": "Faith & seasonal","emoji": "🕯️", "blurb": "Daily practice and month-long resets." }
+    {
+      "id": "everyday",
+      "title": "Everyday basics",
+      "emoji": "☀️",
+      "blurb": "Simple habits most good days share."
+    },
+    {
+      "id": "fitness",
+      "title": "Fitness",
+      "emoji": "🏃",
+      "blurb": "Move more, get stronger, sleep better."
+    },
+    {
+      "id": "mind",
+      "title": "Mind",
+      "emoji": "🧘",
+      "blurb": "Calm, focus and rest."
+    },
+    {
+      "id": "learning",
+      "title": "Learning",
+      "emoji": "📚",
+      "blurb": "Read, study, practise a skill."
+    },
+    {
+      "id": "creative",
+      "title": "Creative",
+      "emoji": "🎨",
+      "blurb": "Make something most days."
+    },
+    {
+      "id": "money",
+      "title": "Money & home",
+      "emoji": "🏠",
+      "blurb": "Spend less, tidy up, feel in control."
+    },
+    {
+      "id": "faith",
+      "title": "Faith & seasonal",
+      "emoji": "🕯️",
+      "blurb": "Daily practice and month-long resets."
+    },
+    {
+      "id": "seasonal",
+      "title": "Seasonal",
+      "emoji": "🗓️",
+      "blurb": "Things the calendar hands you."
+    }
   ],
   "templates": [
-    { "id": "basics", "category": "everyday", "emoji": "☀️", "title": "Everyday basics", "blurb": "Four small anchors for any day.", "goals": [
-      { "title": "Move for 30 minutes", "emoji": "🏃", "colorIndex": 0 },
-      { "title": "Read", "emoji": "📚", "colorIndex": 3, "type": "QUANTITY", "target": 20, "unit": "pages" },
-      { "title": "Drink water", "emoji": "💧", "colorIndex": 3, "type": "QUANTITY", "target": 8, "unit": "glasses" },
-      { "title": "No phone in bed", "emoji": "📵", "colorIndex": 4 }
-    ]},
-    { "id": "move-daily", "category": "fitness", "emoji": "🚶", "title": "Move every day", "blurb": "Low bar, no excuses: some movement daily, a real workout a few times a week.", "goals": [
-      { "title": "Walk or move 30 minutes", "emoji": "🚶", "colorIndex": 2 },
-      { "title": "Workout", "emoji": "🏋️", "colorIndex": 0, "cadence": "WEEKLY", "target": 3 },
-      { "title": "Stretch 5 minutes", "emoji": "🤸", "colorIndex": 7 }
-    ]},
-    { "id": "run-habit", "category": "fitness", "emoji": "🏃", "title": "Run habit", "blurb": "Three runs a week plus a longer weekend outing.", "goals": [
-      { "title": "Run", "emoji": "🏃", "colorIndex": 0, "cadence": "WEEKLY", "target": 3, "note": "Start with run/walk intervals if you're new" },
-      { "title": "Long walk or run", "emoji": "🌄", "colorIndex": 9, "weekdays": 96 },
-      { "title": "Stretch after moving", "emoji": "🤸", "colorIndex": 7 }
-    ]},
-    { "id": "strength", "category": "fitness", "emoji": "💪", "title": "Strength basics", "blurb": "Lift three times a week and eat to support it.", "goals": [
-      { "title": "Lift", "emoji": "🏋️", "colorIndex": 0, "cadence": "WEEKLY", "target": 3, "note": "Alternate two simple full-body workouts" },
-      { "title": "Protein with every meal", "emoji": "🍳", "colorIndex": 1 },
-      { "title": "Sleep 7+ hours", "emoji": "🛌", "colorIndex": 4 }
-    ]},
-    { "id": "calm-mornings", "category": "mind", "emoji": "🧘", "title": "Calm mornings", "blurb": "Ten quiet minutes before the day starts.", "goals": [
-      { "title": "Meditate", "emoji": "🧘", "colorIndex": 8, "type": "QUANTITY", "target": 10, "unit": "minutes" },
-      { "title": "No phone for the first hour", "emoji": "📵", "colorIndex": 4 },
-      { "title": "Journal", "emoji": "📝", "colorIndex": 1 }
-    ]},
-    { "id": "sleep-reset", "category": "mind", "emoji": "🌙", "title": "Sleep reset", "blurb": "Fix the evening and the morning fixes itself.", "goals": [
-      { "title": "In bed by 11", "emoji": "🛌", "colorIndex": 4 },
-      { "title": "No caffeine after 2pm", "emoji": "☕", "colorIndex": 9 },
-      { "title": "Daylight within an hour of waking", "emoji": "☀️", "colorIndex": 1 }
-    ]},
-    { "id": "gratitude", "category": "mind", "emoji": "🙏", "title": "Gratitude", "blurb": "Bookend the day with what went right.", "goals": [
-      { "title": "3 gratitudes in the morning", "emoji": "🌅", "colorIndex": 1 },
-      { "title": "3 good things at night", "emoji": "🌙", "colorIndex": 4 }
-    ]},
-    { "id": "focus", "category": "mind", "emoji": "🎯", "title": "Deep focus", "blurb": "One protected block of real work on weekdays.", "goals": [
-      { "title": "Deep work block", "emoji": "💻", "colorIndex": 6, "weekdays": 31 },
-      { "title": "Plan tomorrow tonight", "emoji": "🗒️", "colorIndex": 5 },
-      { "title": "Weekly review", "emoji": "🔍", "colorIndex": 8, "cadence": "WEEKLY", "target": 1 }
-    ]},
-    { "id": "reader", "category": "learning", "emoji": "📖", "title": "Reader", "blurb": "Twenty pages a day is a book every couple of weeks.", "goals": [
-      { "title": "Read", "emoji": "📚", "colorIndex": 3, "type": "QUANTITY", "target": 20, "unit": "pages" },
-      { "title": "Finish a book", "emoji": "📖", "colorIndex": 3, "cadence": "MONTHLY", "target": 2 }
-    ]},
-    { "id": "coder", "category": "learning", "emoji": "💻", "title": "Daily coder", "blurb": "An hour of code a day, shipped in public.", "goals": [
-      { "title": "Code for 1 hour", "emoji": "💻", "colorIndex": 6 },
-      { "title": "Push something", "emoji": "🚀", "colorIndex": 8, "cadence": "WEEKLY", "target": 3 }
-    ]},
-    { "id": "language", "category": "learning", "emoji": "🗣️", "title": "Language learner", "blurb": "Daily reps, a weekly conversation, a monthly story.", "goals": [
-      { "title": "Flashcards", "emoji": "🃏", "colorIndex": 5, "type": "QUANTITY", "target": 15, "unit": "minutes" },
-      { "title": "Have a conversation", "emoji": "🗣️", "colorIndex": 0, "cadence": "WEEKLY", "target": 1 },
-      { "title": "Read a short story", "emoji": "📖", "colorIndex": 3, "cadence": "MONTHLY", "target": 1 }
-    ]},
-    { "id": "musician", "category": "learning", "emoji": "🎸", "title": "Musician", "blurb": "Short daily practice beats a long weekly one.", "goals": [
-      { "title": "Practise", "emoji": "🎸", "colorIndex": 9, "type": "QUANTITY", "target": 20, "unit": "minutes" },
-      { "title": "Learn a new piece", "emoji": "🎼", "colorIndex": 4, "cadence": "WEEKLY", "target": 1 }
-    ]},
-    { "id": "morning-pages", "category": "creative", "emoji": "✍️", "title": "Morning pages", "blurb": "Three pages of longhand before anything else, and a weekly outing for the artist in you.", "goals": [
-      { "title": "Morning pages", "emoji": "✍️", "colorIndex": 1, "type": "QUANTITY", "target": 3, "unit": "pages" },
-      { "title": "Artist date", "emoji": "🎨", "colorIndex": 5, "cadence": "WEEKLY", "target": 1, "note": "A solo outing to refill the well" }
-    ]},
-    { "id": "maker", "category": "creative", "emoji": "🎨", "title": "Daily maker", "blurb": "Make something small every day; share one thing a week.", "goals": [
-      { "title": "Create for 30 minutes", "emoji": "🎨", "colorIndex": 5 },
-      { "title": "Share one thing", "emoji": "📸", "colorIndex": 8, "cadence": "WEEKLY", "target": 1 }
-    ]},
-    { "id": "spend-less", "category": "money", "emoji": "💰", "title": "Spend less", "blurb": "Know where the money goes, then keep more of it.", "goals": [
-      { "title": "No non-essential spending", "emoji": "🚫", "colorIndex": 6 },
-      { "title": "Log today's expenses", "emoji": "🧾", "colorIndex": 1 },
-      { "title": "Move money to savings", "emoji": "🏦", "colorIndex": 2, "cadence": "WEEKLY", "target": 1 }
-    ]},
-    { "id": "tidy-home", "category": "money", "emoji": "🧹", "title": "Tidy home", "blurb": "Fifteen minutes a day and the place stays nice.", "goals": [
-      { "title": "Tidy for 15 minutes", "emoji": "🧹", "colorIndex": 9 },
-      { "title": "Declutter items", "emoji": "📦", "colorIndex": 7, "cadence": "WEEKLY", "type": "QUANTITY", "target": 10, "unit": "items" }
-    ]},
-    { "id": "daily-practice", "category": "faith", "emoji": "🕯️", "title": "Daily practice", "blurb": "Prayer or reflection and a daily reading.", "goals": [
-      { "title": "Prayer or reflection", "emoji": "🕯️", "colorIndex": 1 },
-      { "title": "Read today's passage", "emoji": "📖", "colorIndex": 3 }
-    ]},
-    { "id": "alcohol-free", "category": "faith", "emoji": "🚱", "title": "Alcohol-free month", "blurb": "A dry month, one day at a time. Streaks were made for this.", "goals": [
-      { "title": "Alcohol-free", "emoji": "🚱", "colorIndex": 3 },
-      { "title": "Drink water", "emoji": "💧", "colorIndex": 3, "type": "QUANTITY", "target": 8, "unit": "glasses" }
-    ]},
-    { "id": "detox", "category": "faith", "emoji": "📵", "title": "Digital detox", "blurb": "Less screen, more life, for a week or a month.", "goals": [
-      { "title": "Screen time under 2 hours", "emoji": "⏱️", "colorIndex": 6 },
-      { "title": "No phone at the table", "emoji": "🍽️", "colorIndex": 9 },
-      { "title": "Phone out of the bedroom", "emoji": "📵", "colorIndex": 4 }
-    ]}
+    {
+      "id": "basics",
+      "category": "everyday",
+      "emoji": "☀️",
+      "title": "Everyday basics",
+      "blurb": "Four small anchors for any day.",
+      "goals": [
+        {
+          "title": "Move for 30 minutes",
+          "emoji": "🏃",
+          "colorIndex": 0
+        },
+        {
+          "title": "Read",
+          "emoji": "📚",
+          "colorIndex": 3,
+          "type": "QUANTITY",
+          "target": 20,
+          "unit": "pages"
+        },
+        {
+          "title": "Drink water",
+          "emoji": "💧",
+          "colorIndex": 3,
+          "type": "QUANTITY",
+          "target": 8,
+          "unit": "glasses"
+        },
+        {
+          "title": "No phone in bed",
+          "emoji": "📵",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "move-daily",
+      "category": "fitness",
+      "emoji": "🚶",
+      "title": "Move every day",
+      "blurb": "Low bar, no excuses: some movement daily, a real workout a few times a week.",
+      "goals": [
+        {
+          "title": "Walk or move 30 minutes",
+          "emoji": "🚶",
+          "colorIndex": 2
+        },
+        {
+          "title": "Workout",
+          "emoji": "🏋️",
+          "colorIndex": 0,
+          "cadence": "WEEKLY",
+          "target": 3
+        },
+        {
+          "title": "Stretch 5 minutes",
+          "emoji": "🤸",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "id": "run-habit",
+      "category": "fitness",
+      "emoji": "🏃",
+      "title": "Run habit",
+      "blurb": "Three runs a week plus a longer weekend outing.",
+      "goals": [
+        {
+          "title": "Run",
+          "emoji": "🏃",
+          "colorIndex": 0,
+          "cadence": "WEEKLY",
+          "target": 3,
+          "note": "Start with run/walk intervals if you're new"
+        },
+        {
+          "title": "Long walk or run",
+          "emoji": "🌄",
+          "colorIndex": 9,
+          "weekdays": 96
+        },
+        {
+          "title": "Stretch after moving",
+          "emoji": "🤸",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "id": "strength",
+      "category": "fitness",
+      "emoji": "💪",
+      "title": "Strength basics",
+      "blurb": "Lift three times a week and eat to support it.",
+      "goals": [
+        {
+          "title": "Lift",
+          "emoji": "🏋️",
+          "colorIndex": 0,
+          "cadence": "WEEKLY",
+          "target": 3,
+          "note": "Alternate two simple full-body workouts"
+        },
+        {
+          "title": "Protein with every meal",
+          "emoji": "🍳",
+          "colorIndex": 1
+        },
+        {
+          "title": "Sleep 7+ hours",
+          "emoji": "🛌",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "calm-mornings",
+      "category": "mind",
+      "emoji": "🧘",
+      "title": "Calm mornings",
+      "blurb": "Ten quiet minutes before the day starts.",
+      "goals": [
+        {
+          "title": "Meditate",
+          "emoji": "🧘",
+          "colorIndex": 8,
+          "type": "QUANTITY",
+          "target": 10,
+          "unit": "minutes"
+        },
+        {
+          "title": "No phone for the first hour",
+          "emoji": "📵",
+          "colorIndex": 4
+        },
+        {
+          "title": "Journal",
+          "emoji": "📝",
+          "colorIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "sleep-reset",
+      "category": "mind",
+      "emoji": "🌙",
+      "title": "Sleep reset",
+      "blurb": "Fix the evening and the morning fixes itself.",
+      "goals": [
+        {
+          "title": "In bed by 11",
+          "emoji": "🛌",
+          "colorIndex": 4
+        },
+        {
+          "title": "No caffeine after 2pm",
+          "emoji": "☕",
+          "colorIndex": 9
+        },
+        {
+          "title": "Daylight within an hour of waking",
+          "emoji": "☀️",
+          "colorIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "gratitude",
+      "category": "mind",
+      "emoji": "🙏",
+      "title": "Gratitude",
+      "blurb": "Bookend the day with what went right.",
+      "goals": [
+        {
+          "title": "3 gratitudes in the morning",
+          "emoji": "🌅",
+          "colorIndex": 1
+        },
+        {
+          "title": "3 good things at night",
+          "emoji": "🌙",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "focus",
+      "category": "mind",
+      "emoji": "🎯",
+      "title": "Deep focus",
+      "blurb": "One protected block of real work on weekdays.",
+      "goals": [
+        {
+          "title": "Deep work block",
+          "emoji": "💻",
+          "colorIndex": 6,
+          "weekdays": 31
+        },
+        {
+          "title": "Plan tomorrow tonight",
+          "emoji": "🗒️",
+          "colorIndex": 5
+        },
+        {
+          "title": "Weekly review",
+          "emoji": "🔍",
+          "colorIndex": 8,
+          "cadence": "WEEKLY",
+          "target": 1
+        }
+      ]
+    },
+    {
+      "id": "reader",
+      "category": "learning",
+      "emoji": "📖",
+      "title": "Reader",
+      "blurb": "Twenty pages a day is a book every couple of weeks.",
+      "goals": [
+        {
+          "title": "Read",
+          "emoji": "📚",
+          "colorIndex": 3,
+          "type": "QUANTITY",
+          "target": 20,
+          "unit": "pages"
+        },
+        {
+          "title": "Finish a book",
+          "emoji": "📖",
+          "colorIndex": 3,
+          "cadence": "MONTHLY",
+          "target": 2
+        }
+      ]
+    },
+    {
+      "id": "coder",
+      "category": "learning",
+      "emoji": "💻",
+      "title": "Daily coder",
+      "blurb": "An hour of code a day, shipped in public.",
+      "goals": [
+        {
+          "title": "Code for 1 hour",
+          "emoji": "💻",
+          "colorIndex": 6
+        },
+        {
+          "title": "Push something",
+          "emoji": "🚀",
+          "colorIndex": 8,
+          "cadence": "WEEKLY",
+          "target": 3
+        }
+      ]
+    },
+    {
+      "id": "language",
+      "category": "learning",
+      "emoji": "🗣️",
+      "title": "Language learner",
+      "blurb": "Daily reps, a weekly conversation, a monthly story.",
+      "goals": [
+        {
+          "title": "Flashcards",
+          "emoji": "🃏",
+          "colorIndex": 5,
+          "type": "QUANTITY",
+          "target": 15,
+          "unit": "minutes"
+        },
+        {
+          "title": "Have a conversation",
+          "emoji": "🗣️",
+          "colorIndex": 0,
+          "cadence": "WEEKLY",
+          "target": 1
+        },
+        {
+          "title": "Read a short story",
+          "emoji": "📖",
+          "colorIndex": 3,
+          "cadence": "MONTHLY",
+          "target": 1
+        }
+      ]
+    },
+    {
+      "id": "musician",
+      "category": "learning",
+      "emoji": "🎸",
+      "title": "Musician",
+      "blurb": "Short daily practice beats a long weekly one.",
+      "goals": [
+        {
+          "title": "Practise",
+          "emoji": "🎸",
+          "colorIndex": 9,
+          "type": "QUANTITY",
+          "target": 20,
+          "unit": "minutes"
+        },
+        {
+          "title": "Learn a new piece",
+          "emoji": "🎼",
+          "colorIndex": 4,
+          "cadence": "WEEKLY",
+          "target": 1
+        }
+      ]
+    },
+    {
+      "id": "morning-pages",
+      "category": "creative",
+      "emoji": "✍️",
+      "title": "Morning pages",
+      "blurb": "Three pages of longhand before anything else, and a weekly outing for the artist in you.",
+      "goals": [
+        {
+          "title": "Morning pages",
+          "emoji": "✍️",
+          "colorIndex": 1,
+          "type": "QUANTITY",
+          "target": 3,
+          "unit": "pages"
+        },
+        {
+          "title": "Artist date",
+          "emoji": "🎨",
+          "colorIndex": 5,
+          "cadence": "WEEKLY",
+          "target": 1,
+          "note": "A solo outing to refill the well"
+        }
+      ]
+    },
+    {
+      "id": "maker",
+      "category": "creative",
+      "emoji": "🎨",
+      "title": "Daily maker",
+      "blurb": "Make something small every day; share one thing a week.",
+      "goals": [
+        {
+          "title": "Create for 30 minutes",
+          "emoji": "🎨",
+          "colorIndex": 5
+        },
+        {
+          "title": "Share one thing",
+          "emoji": "📸",
+          "colorIndex": 8,
+          "cadence": "WEEKLY",
+          "target": 1
+        }
+      ]
+    },
+    {
+      "id": "spend-less",
+      "category": "money",
+      "emoji": "💰",
+      "title": "Spend less",
+      "blurb": "Know where the money goes, then keep more of it.",
+      "goals": [
+        {
+          "title": "No non-essential spending",
+          "emoji": "🚫",
+          "colorIndex": 6
+        },
+        {
+          "title": "Log today's expenses",
+          "emoji": "🧾",
+          "colorIndex": 1
+        },
+        {
+          "title": "Move money to savings",
+          "emoji": "🏦",
+          "colorIndex": 2,
+          "cadence": "WEEKLY",
+          "target": 1
+        }
+      ]
+    },
+    {
+      "id": "tidy-home",
+      "category": "money",
+      "emoji": "🧹",
+      "title": "Tidy home",
+      "blurb": "Fifteen minutes a day and the place stays nice.",
+      "goals": [
+        {
+          "title": "Tidy for 15 minutes",
+          "emoji": "🧹",
+          "colorIndex": 9
+        },
+        {
+          "title": "Declutter items",
+          "emoji": "📦",
+          "colorIndex": 7,
+          "cadence": "WEEKLY",
+          "type": "QUANTITY",
+          "target": 10,
+          "unit": "items"
+        }
+      ]
+    },
+    {
+      "id": "daily-practice",
+      "category": "faith",
+      "emoji": "🕯️",
+      "title": "Daily practice",
+      "blurb": "Prayer or reflection and a daily reading.",
+      "goals": [
+        {
+          "title": "Prayer or reflection",
+          "emoji": "🕯️",
+          "colorIndex": 1
+        },
+        {
+          "title": "Read today's passage",
+          "emoji": "📖",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "id": "alcohol-free",
+      "category": "faith",
+      "emoji": "🚱",
+      "title": "Alcohol-free month",
+      "blurb": "A dry month, one day at a time. Streaks were made for this.",
+      "goals": [
+        {
+          "title": "Alcohol-free",
+          "emoji": "🚱",
+          "colorIndex": 3
+        },
+        {
+          "title": "Drink water",
+          "emoji": "💧",
+          "colorIndex": 3,
+          "type": "QUANTITY",
+          "target": 8,
+          "unit": "glasses"
+        }
+      ],
+      "season": {
+        "from": "09-20",
+        "to": "10-31"
+      }
+    },
+    {
+      "id": "detox",
+      "category": "faith",
+      "emoji": "📵",
+      "title": "Digital detox",
+      "blurb": "Less screen, more life, for a week or a month.",
+      "goals": [
+        {
+          "title": "Screen time under 2 hours",
+          "emoji": "⏱️",
+          "colorIndex": 6
+        },
+        {
+          "title": "No phone at the table",
+          "emoji": "🍽️",
+          "colorIndex": 9
+        },
+        {
+          "title": "Phone out of the bedroom",
+          "emoji": "📵",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "new-year-reset",
+      "category": "seasonal",
+      "emoji": "🎆",
+      "title": "New Year reset",
+      "blurb": "A clean, small January: three habits, one weekly review.",
+      "season": {
+        "from": "12-26",
+        "to": "01-14"
+      },
+      "goals": [
+        {
+          "title": "Move for 30 minutes",
+          "emoji": "🏃",
+          "colorIndex": 0
+        },
+        {
+          "title": "In bed by 11",
+          "emoji": "🛌",
+          "colorIndex": 4
+        },
+        {
+          "title": "No phone for the first hour",
+          "emoji": "📵",
+          "colorIndex": 4
+        },
+        {
+          "title": "Weekly review",
+          "emoji": "🔍",
+          "colorIndex": 8,
+          "cadence": "WEEKLY",
+          "target": 1
+        }
+      ]
+    }
   ]
 }

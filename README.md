@@ -37,6 +37,24 @@ your best day, check them off, and watch your streak, XP and calendar fill in. E
   so targets and titles change on schedule and history stays exact. Today shows "Week 3 of 9"; strict programs
   count unbroken days and can be restarted; graduation awards a badge and XP. Editing or archiving a program goal
   only touches the version in force today and leaves future phases intact.
+- **Pause a program** for illness or travel from its card on Today: its goals leave the plan, and on resume every
+  remaining phase shifts forward by the days away. Pausing before day one just moves the start.
+- **Seasonal shelf**: templates and programs can carry a `season` window ("MM-dd" to "MM-dd", may wrap the year).
+  In season they appear under "Right now" in the browser and as a one-line nudge on Today; otherwise they sit
+  under the Seasonal category. Shipped: Dry January, Sober October, 40 days of giving up, a novel month, a New
+  Year reset bundle.
+- **Share a program as a file** from its card, and **Import file** to load one from a coach or friend. Imports
+  are validated (1-730 days, 1-8 goals, ordered phases within the program, weekly phases on week boundaries) and
+  kept in the device's own library under "Imported". The file is the same JSON shape as `programs.json`:
+
+  ```json
+  { "version": 1, "programs": [ {
+      "id": "my-plan", "category": "fitness", "emoji": "🏃", "title": "My plan", "blurb": "…", "lengthDays": 28,
+      "graduation": { "title": "Done", "icon": "🏅", "xp": 300 }, "strict": false,
+      "goals": [ { "key": "run", "title": "Run", "emoji": "🏃", "colorIndex": 0, "type": "CHECK", "cadence": "WEEKLY",
+                   "target": 3, "phases": [ { "fromDay": 1, "note": "Week 1" }, { "fromDay": 8, "note": "Week 2" } ] } ]
+  } ] }
+  ```
 - **The flame evolves** through six forms with level (Spark → Ember → Flame → Blaze → Inferno → Supernova), and
   levels unlock flame skins and app accent themes chosen under Settings › Style.
 

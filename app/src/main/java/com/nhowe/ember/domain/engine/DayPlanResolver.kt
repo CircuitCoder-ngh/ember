@@ -25,6 +25,9 @@ object DayPlanResolver {
             .filter { it.kind == OverrideKind.SKIP }
             .mapTo(HashSet()) { it.goalId to it.date }
         val orderedGoals = history.goals.sortedWith(compareBy({ it.sortOrder }, { it.createdAt }))
+        val pausedPrograms = history.programs.filter { it.pauses.isNotEmpty() }
+        val pausesByGoal: Map<String, com.nhowe.ember.domain.model.Program> =
+            pausedPrograms.flatMap { p -> p.goalIds.map { it to p } }.toMap()
 
         val result = sortedMapOf<LocalDate, DayPlan>()
         for (date in datesBetween(from, to)) {
@@ -34,6 +37,7 @@ object DayPlanResolver {
             for (goal in orderedGoals) {
                 val version = versionsByGoal[goal.id]?.firstOrNull { it.covers(date) } ?: continue
                 if (!version.scheduledOn(date, goal)) continue
+                if (pausesByGoal[goal.id]?.isPausedOn(date) == true) continue
                 val resolved = ResolvedGoal(goal, version, completions[goal.id to date])
                 when {
                     version.isPeriodic -> periodic += resolved

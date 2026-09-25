@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 
 @Database(
     entities = [GoalEntity::class, GoalVersionEntity::class, CompletionEntity::class, DayOverrideEntity::class, CelebrationEntity::class, ProgramEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 abstract class EmberDatabase : RoomDatabase() {
@@ -54,10 +54,17 @@ abstract class EmberDatabase : RoomDatabase() {
             }
         }
 
+        /** v4: program pause windows. */
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.execSQL("ALTER TABLE program ADD COLUMN pauses TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
         fun build(context: Context, name: String = "ember.db"): EmberDatabase =
             Room.databaseBuilder<EmberDatabase>(context.applicationContext, name)
                 .setDriver(BundledSQLiteDriver())
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
     }

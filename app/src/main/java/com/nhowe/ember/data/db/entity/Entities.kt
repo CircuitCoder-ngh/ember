@@ -15,6 +15,7 @@ import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.domain.model.GoalType
 import com.nhowe.ember.domain.model.GoalVersion
 import com.nhowe.ember.domain.model.OverrideKind
+import com.nhowe.ember.domain.model.PausePeriod
 import com.nhowe.ember.domain.model.Program
 
 @Entity(tableName = "goal")
@@ -111,17 +112,28 @@ data class ProgramEntity(
     val graduationXp: Int,
     val nextTemplateId: String?,
     val abandonedOn: Int?,
+    @ColumnInfo(defaultValue = "") val pauses: String = "",
 ) {
     fun toDomain() = Program(
         id, templateId, title, emoji, startDate.toLocalDate(), lengthDays, goalIds.split(',').filter { it.isNotEmpty() },
         strict, graduationTitle, graduationIcon, graduationXp, nextTemplateId, abandonedOn?.toLocalDate(),
+        pauses = decodePauses(pauses),
     )
 
     companion object {
         fun from(p: Program) = ProgramEntity(
             p.id, p.templateId, p.title, p.emoji, p.startDate.toEpochDayInt(), p.lengthDays, p.goalIds.joinToString(","),
             p.strict, p.graduationTitle, p.graduationIcon, p.graduationXp, p.nextTemplateId, p.abandonedOn?.toEpochDayInt(),
+            pauses = encodePauses(p.pauses),
         )
+
+        fun encodePauses(pauses: List<PausePeriod>): String =
+            pauses.joinToString(",") { "${it.from.toEpochDayInt()}:${it.to?.toEpochDayInt() ?: ""}" }
+
+        fun decodePauses(text: String): List<PausePeriod> = text.split(',').filter { it.isNotBlank() }.mapNotNull { part ->
+            val (a, b) = part.split(':').let { it[0] to it.getOrElse(1) { "" } }
+            a.toIntOrNull()?.let { PausePeriod(it.toLocalDate(), b.toIntOrNull()?.toLocalDate()) }
+        }
     }
 }
 

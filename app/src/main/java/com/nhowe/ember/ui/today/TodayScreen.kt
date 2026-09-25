@@ -78,6 +78,7 @@ fun TodayScreen(
     onEditGoal: (String) -> Unit,
     onNewGoal: () -> Unit,
     onNewOneOff: (LocalDate) -> Unit,
+    onBrowseTemplates: () -> Unit = {},
 ) {
     val container = LocalAppContainer.current
     val vm: TodayViewModel = viewModel { TodayViewModel(container) }
@@ -109,6 +110,7 @@ fun TodayScreen(
         val sink = settings?.completedSinkToBottom ?: true
         val ordered = if (sink) plan.goals.sortedBy { it.isDone } else plan.goals
         val recap = remember(snap) { recapToShow(snap) }
+        val season = remember(snap.today, snap.history.programs) { seasonNudge(container.templateRepository, snap) }
 
         LazyColumn(
             Modifier.fillMaxSize().statusBarsPadding(),
@@ -136,6 +138,11 @@ fun TodayScreen(
             if (recap != null && recap.key !in shownKeys) {
                 item(key = "recap") {
                     WeeklyRecapCard(recap = recap, modifier = Modifier.padding(horizontal = 16.dp).animateItem(), onDismiss = { vm.markShown(recap.key) })
+                }
+            }
+            if (season != null && season.second !in shownKeys) {
+                item(key = "season") {
+                    SeasonNudge(text = season.first, onOpen = onBrowseTemplates, onDismiss = { vm.markShown(season.second) }, modifier = Modifier.padding(horizontal = 16.dp).animateItem())
                 }
             }
             items(snap.activePrograms, key = { "program-${it.program.id}" }) { p ->
@@ -232,13 +239,19 @@ fun TodayScreen(
                 title = { Text(p.program.title) },
                 text = {
                     Text(
-                        if (p.program.strict && template != null) "Start over resets the count to day 1 from today. Leave archives its goals; your history stays."
-                        else "Leave archives this program's goals from tomorrow. Everything you've logged stays in your history.",
+                        buildString {
+                            if (p.isPaused) append("Resume picks up exactly where you left off: every remaining phase shifts forward by the days you were away. ")
+                            else append("Pause for illness or travel: its goals leave your plan and the remaining phases wait for you. ")
+                            if (p.program.strict && template != null) append("Start over resets the count to day 1 from today. ")
+                            append("Leave archives its goals; your history stays.")
+                        },
                     )
                 },
                 confirmButton = {
                     Row {
-                        if (p.program.strict && template != null) {
+                        if (p.isPaused) TextButton(onClick = { vm.resumeProgram(p); programMenu = null }) { Text("Resume") }
+                        else TextButton(onClick = { vm.pauseProgram(p); programMenu = null }) { Text("Pause") }
+                        if (p.program.strict && template != null && !p.isPaused) {
                             TextButton(onClick = { vm.restartProgram(p, template); programMenu = null }) { Text("Start over") }
                         }
                         TextButton(onClick = { vm.leaveProgram(p); programMenu = null }) { Text("Leave", color = MaterialTheme.colorScheme.error) }
@@ -323,6 +336,33 @@ private fun statusLine(progress: Float, threshold: Double, snap: com.nhowe.ember
     else -> {
         val need = ((threshold - progress) * 100).roundToInt().coerceAtLeast(1)
         "$need% more to keep the flame"
+    }
+}
+
+/** One line when a seasonal program or bundle is open and the user isn't already on it. */
+private fun seasonNudge(repo: com.nhowe.ember.data.templates.TemplateRepository, snap: com.nhowe.ember.domain.model.EngineSnapshot): Pair<String, String>? {
+    val today = snap.today
+    val enrolled = snap.history.programs.map { it.templateId }.toSet()
+    val program = repo.programs.firstOrNull { it.season?.isOpen(today) == true && it.id !in enrolled }
+    if (program != null) return "${program.emoji} ${program.title} is open. ${program.weeks} weeks, ends with the ${program.graduation.title} badge." to "season:${program.id}:${program.season!!.seasonKey(today)}"
+    val template = repo.templates.firstOrNull { it.season?.isOpen(today) == true }
+    if (template != null) return "${template.emoji} ${template.title} is in season. ${template.goals.size} goals, one tap to add." to "season:${template.id}:${template.season!!.seasonKey(today)}"
+    return null
+}
+
+@Composable
+private fun SeasonNudge(text: String, onOpen: () -> Unit, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.16f))
+            .padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
+        TextButton(onClick = onOpen) { Text("See it") }
+        TextButton(onClick = onDismiss) { Text("Hide") }
     }
 }
 

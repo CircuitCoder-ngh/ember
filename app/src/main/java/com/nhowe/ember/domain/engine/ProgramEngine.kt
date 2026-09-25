@@ -16,9 +16,11 @@ object ProgramEngine {
 
     fun progress(program: Program, plans: Map<LocalDate, DayPlan>, today: LocalDate): ProgramProgress {
         val ids = program.goalIds.toSet()
-        val dayIndex = if (today < program.startDate) 0 else minOf((today.toEpochDay() - program.startDate.toEpochDay()).toInt() + 1, program.lengthDays)
+        val endDate = program.endDate(today)
+        val paused = program.pausedDays(today)
+        val dayIndex = if (today < program.startDate) 0 else minOf((today.toEpochDay() - program.startDate.toEpochDay()).toInt() + 1 - paused, program.lengthDays).coerceAtLeast(0)
         val week = if (dayIndex == 0) 0 else (dayIndex - 1) / 7 + 1
-        val elapsedEnd = minOf(today, program.endDate)
+        val elapsedEnd = minOf(today, endDate)
 
         // Adherence: mean credit of the program's daily goals on elapsed days that had any.
         val credits = ArrayList<Double>()
@@ -26,6 +28,7 @@ object ProgramEngine {
         var brokenOn: LocalDate? = null
         if (today >= program.startDate) {
             for (d in datesBetween(program.startDate, elapsedEnd)) {
+                if (program.isPausedOn(d)) continue
                 val goals = plans[d]?.goals?.filter { it.id in ids } ?: emptyList()
                 if (goals.isEmpty()) continue
                 credits += goals.sumOf { it.credit } / goals.size
@@ -35,7 +38,7 @@ object ProgramEngine {
                 // today unfinished is pending, not a break
             }
         }
-        val graduatedOn = if (!program.isAbandoned && today > program.endDate) program.endDate else null
+        val graduatedOn = if (!program.isAbandoned && !program.isPaused && today > endDate) endDate else null
         return ProgramProgress(
             program = program,
             dayIndex = dayIndex,
@@ -45,6 +48,7 @@ object ProgramEngine {
             strictDay = strict,
             strictBrokenOn = brokenOn,
             graduatedOn = graduatedOn,
+            endDate = endDate,
         )
     }
 
