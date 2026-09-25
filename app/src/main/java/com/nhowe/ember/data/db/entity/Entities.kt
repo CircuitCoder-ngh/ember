@@ -15,6 +15,7 @@ import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.domain.model.GoalType
 import com.nhowe.ember.domain.model.GoalVersion
 import com.nhowe.ember.domain.model.OverrideKind
+import com.nhowe.ember.domain.model.Program
 
 @Entity(tableName = "goal")
 data class GoalEntity(
@@ -92,6 +93,35 @@ data class DayOverrideEntity(
 
     companion object {
         fun from(o: DayOverride) = DayOverrideEntity(o.goalId, o.date.toEpochDayInt(), o.kind.name)
+    }
+}
+
+@Entity(tableName = "program")
+data class ProgramEntity(
+    @PrimaryKey val id: String,
+    val templateId: String,
+    val title: String,
+    val emoji: String,
+    val startDate: Int,
+    val lengthDays: Int,
+    val goalIds: String,
+    val strict: Boolean,
+    val graduationTitle: String,
+    val graduationIcon: String,
+    val graduationXp: Int,
+    val nextTemplateId: String?,
+    val abandonedOn: Int?,
+) {
+    fun toDomain() = Program(
+        id, templateId, title, emoji, startDate.toLocalDate(), lengthDays, goalIds.split(',').filter { it.isNotEmpty() },
+        strict, graduationTitle, graduationIcon, graduationXp, nextTemplateId, abandonedOn?.toLocalDate(),
+    )
+
+    companion object {
+        fun from(p: Program) = ProgramEntity(
+            p.id, p.templateId, p.title, p.emoji, p.startDate.toEpochDayInt(), p.lengthDays, p.goalIds.joinToString(","),
+            p.strict, p.graduationTitle, p.graduationIcon, p.graduationXp, p.nextTemplateId, p.abandonedOn?.toEpochDayInt(),
+        )
     }
 }
 

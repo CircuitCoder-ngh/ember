@@ -11,6 +11,7 @@ import com.nhowe.ember.domain.model.GoalType
 import com.nhowe.ember.domain.model.GoalVersion
 import com.nhowe.ember.domain.model.History
 import com.nhowe.ember.domain.model.OverrideKind
+import com.nhowe.ember.domain.model.Program
 import com.nhowe.ember.domain.model.Settings
 import com.nhowe.ember.domain.model.ThemeMode
 import java.time.LocalDate
@@ -28,6 +29,7 @@ data class BackupFile(
     val completions: List<CompletionJson>,
     val overrides: List<OverrideJson>,
     val settings: SettingsJson,
+    val programs: List<ProgramJson> = emptyList(),
 ) {
     companion object { const val FORMAT = 1 }
 }
@@ -47,6 +49,13 @@ data class CompletionJson(val goalId: String, val date: String, val checked: Boo
 
 @Serializable
 data class OverrideJson(val goalId: String, val date: String, val kind: String)
+
+@Serializable
+data class ProgramJson(
+    val id: String, val templateId: String, val title: String, val emoji: String, val startDate: String, val lengthDays: Int,
+    val goalIds: List<String>, val strict: Boolean, val graduationTitle: String, val graduationIcon: String, val graduationXp: Int,
+    val nextTemplateId: String?, val abandonedOn: String?,
+)
 
 @Serializable
 data class SettingsJson(
@@ -79,6 +88,10 @@ object BackupCodec {
                 settings.hourlyEnabled, settings.hourlyStart.toString(), settings.hourlyEnd.toString(), settings.hourlyAlert,
                 settings.flameSkin.name, settings.accentTheme.name,
             ),
+            programs = history.programs.map {
+                ProgramJson(it.id, it.templateId, it.title, it.emoji, it.startDate.toString(), it.lengthDays, it.goalIds, it.strict,
+                    it.graduationTitle, it.graduationIcon, it.graduationXp, it.nextTemplateId, it.abandonedOn?.toString())
+            },
         ),
     )
 
@@ -94,6 +107,10 @@ object BackupCodec {
             },
             completions = file.completions.map { Completion(it.goalId, LocalDate.parse(it.date), it.checked, it.count, it.updatedAt) },
             overrides = file.overrides.map { DayOverride(it.goalId, LocalDate.parse(it.date), OverrideKind.valueOf(it.kind)) },
+            programs = file.programs.map {
+                Program(it.id, it.templateId, it.title, it.emoji, LocalDate.parse(it.startDate), it.lengthDays, it.goalIds, it.strict,
+                    it.graduationTitle, it.graduationIcon, it.graduationXp, it.nextTemplateId, it.abandonedOn?.let(LocalDate::parse))
+            },
         )
         val s = file.settings
         val settings = Settings(

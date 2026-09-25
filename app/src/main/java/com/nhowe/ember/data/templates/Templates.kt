@@ -56,6 +56,13 @@ class TemplateRepository(context: Context) {
         Json { ignoreUnknownKeys = true }.decodeFromString(TemplateLibrary.serializer(), text)
     }
 
+    val programLibrary: ProgramLibrary by lazy {
+        val text = context.assets.open("programs.json").bufferedReader().use { it.readText() }
+        Json { ignoreUnknownKeys = true }.decodeFromString(ProgramLibrary.serializer(), text)
+    }
+    val programs: List<ProgramTemplate> get() = programLibrary.programs
+    fun programById(id: String): ProgramTemplate? = programs.firstOrNull { it.id == id }
+
     val categories: List<TemplateCategory> get() = library.categories
     val templates: List<GoalTemplate> get() = library.templates
     fun byId(id: String): GoalTemplate? = templates.firstOrNull { it.id == id }

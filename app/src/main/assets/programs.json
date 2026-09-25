@@ -1,0 +1,1162 @@
+{
+ "version": 1,
+ "programs": [
+  {
+   "id": "run-5k",
+   "category": "fitness",
+   "emoji": "🏃",
+   "title": "9-week 5K plan",
+   "blurb": "Run/walk intervals that build to 30 minutes of running. Three sessions a week.",
+   "lengthDays": 63,
+   "next": "run-10k",
+   "graduation": {
+    "title": "5K Finisher",
+    "icon": "🏅",
+    "xp": 500
+   },
+   "goals": [
+    {
+     "key": "run",
+     "title": "Run session",
+     "emoji": "🏃",
+     "colorIndex": 0,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 3,
+     "phases": [
+      {
+       "fromDay": 1,
+       "note": "Week 1: 60s run / 90s walk × 8"
+      },
+      {
+       "fromDay": 8,
+       "note": "Week 2: 90s run / 2 min walk × 6"
+      },
+      {
+       "fromDay": 15,
+       "note": "Week 3: 90s, 3 min, 90s, 3 min run with walks between"
+      },
+      {
+       "fromDay": 22,
+       "note": "Week 4: 3, 5, 3, 5 min runs with walks between"
+      },
+      {
+       "fromDay": 29,
+       "note": "Week 5: 5, 8, 5 min runs; end the week with 20 min continuous"
+      },
+      {
+       "fromDay": 36,
+       "note": "Week 6: 5, 8, 5 min; then 10, 3, 10; then 25 min continuous"
+      },
+      {
+       "fromDay": 43,
+       "note": "Week 7: 25 min continuous, three times"
+      },
+      {
+       "fromDay": 50,
+       "note": "Week 8: 28 min continuous, three times"
+      },
+      {
+       "fromDay": 57,
+       "note": "Week 9: 30 min continuous. You're a runner."
+      }
+     ]
+    },
+    {
+     "key": "stretch",
+     "title": "Stretch after moving",
+     "emoji": "🤸",
+     "colorIndex": 7,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "run-10k",
+   "category": "fitness",
+   "emoji": "🏃",
+   "title": "8-week 10K plan",
+   "blurb": "Three easy runs, one long run at the weekend, one cross-train. The long run ramps weekly.",
+   "lengthDays": 56,
+   "graduation": {
+    "title": "10K Finisher",
+    "icon": "🏅",
+    "xp": 600
+   },
+   "goals": [
+    {
+     "key": "easy",
+     "title": "Easy run",
+     "emoji": "🏃",
+     "colorIndex": 0,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 3,
+     "note": "Conversational pace",
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "long",
+     "title": "Long run",
+     "emoji": "🌄",
+     "colorIndex": 9,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 96,
+     "phases": [
+      {
+       "fromDay": 1,
+       "note": "Long run: 5 km"
+      },
+      {
+       "fromDay": 8,
+       "note": "Long run: 6 km"
+      },
+      {
+       "fromDay": 15,
+       "note": "Long run: 7 km"
+      },
+      {
+       "fromDay": 22,
+       "note": "Long run: 8 km"
+      },
+      {
+       "fromDay": 29,
+       "note": "Long run: 8 km"
+      },
+      {
+       "fromDay": 36,
+       "note": "Long run: 9 km"
+      },
+      {
+       "fromDay": 43,
+       "note": "Long run: 10 km"
+      },
+      {
+       "fromDay": 50,
+       "note": "Long run: 10 km"
+      }
+     ]
+    },
+    {
+     "key": "cross",
+     "title": "Cross-train",
+     "emoji": "🚴",
+     "colorIndex": 2,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 1,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pushups",
+   "category": "fitness",
+   "emoji": "💪",
+   "title": "6-week push-up builder",
+   "blurb": "Three sessions a week, total reps climbing from 30 to 120. Split them into sets.",
+   "lengthDays": 42,
+   "graduation": {
+    "title": "Push-up Pro",
+    "icon": "💪",
+    "xp": 300
+   },
+   "goals": [
+    {
+     "key": "pushups",
+     "title": "Push-ups",
+     "emoji": "💪",
+     "colorIndex": 0,
+     "type": "QUANTITY",
+     "cadence": "DAILY",
+     "weekdays": 21,
+     "target": 30,
+     "unit": "reps",
+     "phases": [
+      {
+       "fromDay": 1,
+       "target": 30,
+       "note": "Week 1: 30 total, in 3-5 sets"
+      },
+      {
+       "fromDay": 8,
+       "target": 45,
+       "note": "Week 2: 45 total, in 3-5 sets"
+      },
+      {
+       "fromDay": 15,
+       "target": 60,
+       "note": "Week 3: 60 total, in 3-5 sets"
+      },
+      {
+       "fromDay": 22,
+       "target": 80,
+       "note": "Week 4: 80 total, in 3-5 sets"
+      },
+      {
+       "fromDay": 29,
+       "target": 100,
+       "note": "Week 5: 100 total, in 3-5 sets"
+      },
+      {
+       "fromDay": 36,
+       "target": 120,
+       "note": "Week 6: 120 total, in 3-5 sets"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "plank30",
+   "category": "fitness",
+   "emoji": "🧘",
+   "title": "30-day plank challenge",
+   "blurb": "From 20 seconds to 2½ minutes in a month. Every third day the hold gets longer.",
+   "lengthDays": 30,
+   "graduation": {
+    "title": "Iron Core",
+    "icon": "🛡️",
+    "xp": 250
+   },
+   "goals": [
+    {
+     "key": "plank",
+     "title": "Plank 20 seconds",
+     "emoji": "🧘",
+     "colorIndex": 8,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1,
+       "title": "Plank 20 seconds"
+      },
+      {
+       "fromDay": 4,
+       "title": "Plank 30 seconds"
+      },
+      {
+       "fromDay": 7,
+       "title": "Plank 40 seconds"
+      },
+      {
+       "fromDay": 10,
+       "title": "Plank 50 seconds"
+      },
+      {
+       "fromDay": 13,
+       "title": "Plank 60 seconds"
+      },
+      {
+       "fromDay": 16,
+       "title": "Plank 75 seconds"
+      },
+      {
+       "fromDay": 19,
+       "title": "Plank 90 seconds"
+      },
+      {
+       "fromDay": 22,
+       "title": "Plank 105 seconds"
+      },
+      {
+       "fromDay": 25,
+       "title": "Plank 120 seconds"
+      },
+      {
+       "fromDay": 28,
+       "title": "Plank 150 seconds"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "meditate21",
+   "category": "mind",
+   "emoji": "🧘",
+   "title": "21-day meditation",
+   "blurb": "Five minutes a day, then ten, then fifteen. Three weeks to a habit.",
+   "lengthDays": 21,
+   "graduation": {
+    "title": "Still Mind",
+    "icon": "🌿",
+    "xp": 200
+   },
+   "goals": [
+    {
+     "key": "med",
+     "title": "Meditate",
+     "emoji": "🧘",
+     "colorIndex": 8,
+     "type": "QUANTITY",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "target": 5,
+     "unit": "minutes",
+     "phases": [
+      {
+       "fromDay": 1,
+       "target": 5
+      },
+      {
+       "fromDay": 8,
+       "target": 10
+      },
+      {
+       "fromDay": 15,
+       "target": 15
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sleep28",
+   "category": "mind",
+   "emoji": "🌙",
+   "title": "4-week sleep reset",
+   "blurb": "Bedtime moves 15 minutes earlier each week; caffeine and daylight do the rest.",
+   "lengthDays": 28,
+   "graduation": {
+    "title": "Well Rested",
+    "icon": "😴",
+    "xp": 250
+   },
+   "goals": [
+    {
+     "key": "bed",
+     "title": "In bed by 23:30",
+     "emoji": "🛌",
+     "colorIndex": 4,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1,
+       "title": "In bed by 23:30"
+      },
+      {
+       "fromDay": 8,
+       "title": "In bed by 23:15"
+      },
+      {
+       "fromDay": 15,
+       "title": "In bed by 23:00"
+      },
+      {
+       "fromDay": 22,
+       "title": "In bed by 22:45"
+      }
+     ]
+    },
+    {
+     "key": "caffeine",
+     "title": "No caffeine after 2pm",
+     "emoji": "☕",
+     "colorIndex": 9,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "light",
+     "title": "Daylight within an hour of waking",
+     "emoji": "☀️",
+     "colorIndex": 1,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "creative12",
+   "category": "creative",
+   "emoji": "✍️",
+   "title": "12-week creative recovery",
+   "blurb": "Morning pages every day, a weekly solo outing, and a chapter of work each week.",
+   "lengthDays": 84,
+   "graduation": {
+    "title": "Recovered Artist",
+    "icon": "🎨",
+    "xp": 700
+   },
+   "goals": [
+    {
+     "key": "pages",
+     "title": "Morning pages",
+     "emoji": "✍️",
+     "colorIndex": 1,
+     "type": "QUANTITY",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "target": 3,
+     "unit": "pages",
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "date",
+     "title": "Artist date",
+     "emoji": "🎨",
+     "colorIndex": 5,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 1,
+     "note": "A solo outing to refill the well",
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "chapter",
+     "title": "This week's chapter and tasks",
+     "emoji": "📖",
+     "colorIndex": 3,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 1,
+     "phases": [
+      {
+       "fromDay": 1,
+       "note": "Week 1: read chapter 1 and do its tasks"
+      },
+      {
+       "fromDay": 8,
+       "note": "Week 2: read chapter 2 and do its tasks"
+      },
+      {
+       "fromDay": 15,
+       "note": "Week 3: read chapter 3 and do its tasks"
+      },
+      {
+       "fromDay": 22,
+       "note": "Week 4: read chapter 4 and do its tasks"
+      },
+      {
+       "fromDay": 29,
+       "note": "Week 5: read chapter 5 and do its tasks"
+      },
+      {
+       "fromDay": 36,
+       "note": "Week 6: read chapter 6 and do its tasks"
+      },
+      {
+       "fromDay": 43,
+       "note": "Week 7: read chapter 7 and do its tasks"
+      },
+      {
+       "fromDay": 50,
+       "note": "Week 8: read chapter 8 and do its tasks"
+      },
+      {
+       "fromDay": 57,
+       "note": "Week 9: read chapter 9 and do its tasks"
+      },
+      {
+       "fromDay": 64,
+       "note": "Week 10: read chapter 10 and do its tasks"
+      },
+      {
+       "fromDay": 71,
+       "note": "Week 11: read chapter 11 and do its tasks"
+      },
+      {
+       "fromDay": 78,
+       "note": "Week 12: read chapter 12 and do its tasks"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tiny28",
+   "category": "everyday",
+   "emoji": "🌱",
+   "title": "4-week tiny habits starter",
+   "blurb": "One tiny habit in week one; a new one stacks on each week. Small enough that you can't fail.",
+   "lengthDays": 28,
+   "graduation": {
+    "title": "Habit Stacker",
+    "icon": "🧱",
+    "xp": 250
+   },
+   "goals": [
+    {
+     "key": "water",
+     "title": "Drink a glass of water on waking",
+     "emoji": "💧",
+     "colorIndex": 3,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "tidy",
+     "title": "2-minute tidy",
+     "emoji": "🧹",
+     "colorIndex": 9,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 8
+      }
+     ]
+    },
+    {
+     "key": "read",
+     "title": "Read 2 pages",
+     "emoji": "📚",
+     "colorIndex": 3,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 15
+      }
+     ]
+    },
+    {
+     "key": "stretch",
+     "title": "Stretch 2 minutes",
+     "emoji": "🤸",
+     "colorIndex": 7,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 22
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "code100",
+   "category": "learning",
+   "emoji": "💻",
+   "title": "100 days of code",
+   "blurb": "An hour of code every day for a hundred days. The finish line is the point.",
+   "lengthDays": 100,
+   "graduation": {
+    "title": "Centurion Coder",
+    "icon": "🏆",
+    "xp": 1000
+   },
+   "goals": [
+    {
+     "key": "code",
+     "title": "Code for 1 hour",
+     "emoji": "💻",
+     "colorIndex": 6,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "ship",
+     "title": "Push something",
+     "emoji": "🚀",
+     "colorIndex": 8,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 3,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discipline75",
+   "category": "everyday",
+   "emoji": "🔥",
+   "title": "75-day discipline challenge",
+   "blurb": "Two workouts, your diet, water, and ten pages, every single day. Strict: a miss restarts day 1.",
+   "lengthDays": 75,
+   "strict": true,
+   "graduation": {
+    "title": "Unbreakable",
+    "icon": "🛡️",
+    "xp": 1500
+   },
+   "goals": [
+    {
+     "key": "w1",
+     "title": "Workout 1 (45 min)",
+     "emoji": "🏋️",
+     "colorIndex": 0,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "w2",
+     "title": "Workout 2, outdoors (45 min)",
+     "emoji": "🌳",
+     "colorIndex": 2,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "diet",
+     "title": "Follow your diet, no cheats",
+     "emoji": "🥗",
+     "colorIndex": 1,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "water",
+     "title": "Drink water",
+     "emoji": "💧",
+     "colorIndex": 3,
+     "type": "QUANTITY",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "target": 4,
+     "unit": "litres",
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "read",
+     "title": "Read",
+     "emoji": "📚",
+     "colorIndex": 3,
+     "type": "QUANTITY",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "target": 10,
+     "unit": "pages",
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "savings52",
+   "category": "money",
+   "emoji": "🏦",
+   "title": "52-week savings challenge",
+   "blurb": "Save 1 the first week, 2 the second, 52 the last. About 1,378 by the end.",
+   "lengthDays": 364,
+   "graduation": {
+    "title": "Saver",
+    "icon": "🏦",
+    "xp": 800
+   },
+   "goals": [
+    {
+     "key": "save",
+     "title": "Save this week's amount",
+     "emoji": "🏦",
+     "colorIndex": 2,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 1,
+     "phases": [
+      {
+       "fromDay": 1,
+       "note": "Week 1: put away 1"
+      },
+      {
+       "fromDay": 8,
+       "note": "Week 2: put away 2"
+      },
+      {
+       "fromDay": 15,
+       "note": "Week 3: put away 3"
+      },
+      {
+       "fromDay": 22,
+       "note": "Week 4: put away 4"
+      },
+      {
+       "fromDay": 29,
+       "note": "Week 5: put away 5"
+      },
+      {
+       "fromDay": 36,
+       "note": "Week 6: put away 6"
+      },
+      {
+       "fromDay": 43,
+       "note": "Week 7: put away 7"
+      },
+      {
+       "fromDay": 50,
+       "note": "Week 8: put away 8"
+      },
+      {
+       "fromDay": 57,
+       "note": "Week 9: put away 9"
+      },
+      {
+       "fromDay": 64,
+       "note": "Week 10: put away 10"
+      },
+      {
+       "fromDay": 71,
+       "note": "Week 11: put away 11"
+      },
+      {
+       "fromDay": 78,
+       "note": "Week 12: put away 12"
+      },
+      {
+       "fromDay": 85,
+       "note": "Week 13: put away 13"
+      },
+      {
+       "fromDay": 92,
+       "note": "Week 14: put away 14"
+      },
+      {
+       "fromDay": 99,
+       "note": "Week 15: put away 15"
+      },
+      {
+       "fromDay": 106,
+       "note": "Week 16: put away 16"
+      },
+      {
+       "fromDay": 113,
+       "note": "Week 17: put away 17"
+      },
+      {
+       "fromDay": 120,
+       "note": "Week 18: put away 18"
+      },
+      {
+       "fromDay": 127,
+       "note": "Week 19: put away 19"
+      },
+      {
+       "fromDay": 134,
+       "note": "Week 20: put away 20"
+      },
+      {
+       "fromDay": 141,
+       "note": "Week 21: put away 21"
+      },
+      {
+       "fromDay": 148,
+       "note": "Week 22: put away 22"
+      },
+      {
+       "fromDay": 155,
+       "note": "Week 23: put away 23"
+      },
+      {
+       "fromDay": 162,
+       "note": "Week 24: put away 24"
+      },
+      {
+       "fromDay": 169,
+       "note": "Week 25: put away 25"
+      },
+      {
+       "fromDay": 176,
+       "note": "Week 26: put away 26"
+      },
+      {
+       "fromDay": 183,
+       "note": "Week 27: put away 27"
+      },
+      {
+       "fromDay": 190,
+       "note": "Week 28: put away 28"
+      },
+      {
+       "fromDay": 197,
+       "note": "Week 29: put away 29"
+      },
+      {
+       "fromDay": 204,
+       "note": "Week 30: put away 30"
+      },
+      {
+       "fromDay": 211,
+       "note": "Week 31: put away 31"
+      },
+      {
+       "fromDay": 218,
+       "note": "Week 32: put away 32"
+      },
+      {
+       "fromDay": 225,
+       "note": "Week 33: put away 33"
+      },
+      {
+       "fromDay": 232,
+       "note": "Week 34: put away 34"
+      },
+      {
+       "fromDay": 239,
+       "note": "Week 35: put away 35"
+      },
+      {
+       "fromDay": 246,
+       "note": "Week 36: put away 36"
+      },
+      {
+       "fromDay": 253,
+       "note": "Week 37: put away 37"
+      },
+      {
+       "fromDay": 260,
+       "note": "Week 38: put away 38"
+      },
+      {
+       "fromDay": 267,
+       "note": "Week 39: put away 39"
+      },
+      {
+       "fromDay": 274,
+       "note": "Week 40: put away 40"
+      },
+      {
+       "fromDay": 281,
+       "note": "Week 41: put away 41"
+      },
+      {
+       "fromDay": 288,
+       "note": "Week 42: put away 42"
+      },
+      {
+       "fromDay": 295,
+       "note": "Week 43: put away 43"
+      },
+      {
+       "fromDay": 302,
+       "note": "Week 44: put away 44"
+      },
+      {
+       "fromDay": 309,
+       "note": "Week 45: put away 45"
+      },
+      {
+       "fromDay": 316,
+       "note": "Week 46: put away 46"
+      },
+      {
+       "fromDay": 323,
+       "note": "Week 47: put away 47"
+      },
+      {
+       "fromDay": 330,
+       "note": "Week 48: put away 48"
+      },
+      {
+       "fromDay": 337,
+       "note": "Week 49: put away 49"
+      },
+      {
+       "fromDay": 344,
+       "note": "Week 50: put away 50"
+      },
+      {
+       "fromDay": 351,
+       "note": "Week 51: put away 51"
+      },
+      {
+       "fromDay": 358,
+       "note": "Week 52: put away 52"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "minimal30",
+   "category": "money",
+   "emoji": "📦",
+   "title": "30-day minimalism game",
+   "blurb": "Day one, one item out the door. Day thirty, thirty. That's 465 things gone.",
+   "lengthDays": 30,
+   "graduation": {
+    "title": "Lighter",
+    "icon": "🪶",
+    "xp": 300
+   },
+   "goals": [
+    {
+     "key": "items",
+     "title": "Get rid of items",
+     "emoji": "📦",
+     "colorIndex": 7,
+     "type": "QUANTITY",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "target": 1,
+     "unit": "items",
+     "phases": [
+      {
+       "fromDay": 1,
+       "target": 1
+      },
+      {
+       "fromDay": 2,
+       "target": 2
+      },
+      {
+       "fromDay": 3,
+       "target": 3
+      },
+      {
+       "fromDay": 4,
+       "target": 4
+      },
+      {
+       "fromDay": 5,
+       "target": 5
+      },
+      {
+       "fromDay": 6,
+       "target": 6
+      },
+      {
+       "fromDay": 7,
+       "target": 7
+      },
+      {
+       "fromDay": 8,
+       "target": 8
+      },
+      {
+       "fromDay": 9,
+       "target": 9
+      },
+      {
+       "fromDay": 10,
+       "target": 10
+      },
+      {
+       "fromDay": 11,
+       "target": 11
+      },
+      {
+       "fromDay": 12,
+       "target": 12
+      },
+      {
+       "fromDay": 13,
+       "target": 13
+      },
+      {
+       "fromDay": 14,
+       "target": 14
+      },
+      {
+       "fromDay": 15,
+       "target": 15
+      },
+      {
+       "fromDay": 16,
+       "target": 16
+      },
+      {
+       "fromDay": 17,
+       "target": 17
+      },
+      {
+       "fromDay": 18,
+       "target": 18
+      },
+      {
+       "fromDay": 19,
+       "target": 19
+      },
+      {
+       "fromDay": 20,
+       "target": 20
+      },
+      {
+       "fromDay": 21,
+       "target": 21
+      },
+      {
+       "fromDay": 22,
+       "target": 22
+      },
+      {
+       "fromDay": 23,
+       "target": 23
+      },
+      {
+       "fromDay": 24,
+       "target": 24
+      },
+      {
+       "fromDay": 25,
+       "target": 25
+      },
+      {
+       "fromDay": 26,
+       "target": 26
+      },
+      {
+       "fromDay": 27,
+       "target": 27
+      },
+      {
+       "fromDay": 28,
+       "target": 28
+      },
+      {
+       "fromDay": 29,
+       "target": 29
+      },
+      {
+       "fromDay": 30,
+       "target": 30
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "novel30",
+   "category": "creative",
+   "emoji": "📝",
+   "title": "30-day novel",
+   "blurb": "1,667 words a day for a month is a 50,000-word draft.",
+   "lengthDays": 30,
+   "graduation": {
+    "title": "Drafted",
+    "icon": "📝",
+    "xp": 600
+   },
+   "goals": [
+    {
+     "key": "words",
+     "title": "Write 1,667 words",
+     "emoji": "📝",
+     "colorIndex": 1,
+     "type": "CHECK",
+     "cadence": "DAILY",
+     "weekdays": 127,
+     "phases": [
+      {
+       "fromDay": 1
+      }
+     ]
+    },
+    {
+     "key": "weekly",
+     "title": "Hit this week's word count",
+     "emoji": "🎯",
+     "colorIndex": 5,
+     "type": "CHECK",
+     "cadence": "WEEKLY",
+     "weekdays": 127,
+     "target": 1,
+     "phases": [
+      {
+       "fromDay": 1,
+       "note": "Week 1: 11,669 words"
+      },
+      {
+       "fromDay": 8,
+       "note": "Week 2: 23,338"
+      },
+      {
+       "fromDay": 15,
+       "note": "Week 3: 35,007"
+      },
+      {
+       "fromDay": 22,
+       "note": "Week 4: 46,676"
+      },
+      {
+       "fromDay": 29,
+       "note": "Final days: 50,000"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

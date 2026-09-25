@@ -45,6 +45,9 @@ import com.nhowe.ember.di.LocalAppContainer
 import com.nhowe.ember.domain.model.ResolvedGoal
 import com.nhowe.ember.ui.components.ComebackCard
 import com.nhowe.ember.ui.components.ConfettiOverlay
+import com.nhowe.ember.ui.components.ProgramCard
+import com.nhowe.ember.domain.model.ProgramProgress
+import androidx.compose.material3.AlertDialog
 import com.nhowe.ember.ui.components.ConfettiTrigger
 import com.nhowe.ember.ui.components.FlameMascot
 import com.nhowe.ember.ui.components.GoalRow
@@ -85,6 +88,7 @@ fun TodayScreen(
     var confetti by remember { mutableStateOf<ConfettiTrigger?>(null) }
     var xpToast by remember { mutableStateOf<Int?>(null) }
     var actionsFor by remember { mutableStateOf<ResolvedGoal?>(null) }
+    var programMenu by remember { mutableStateOf<ProgramProgress?>(null) }
 
     LaunchedEffect(Unit) {
         vm.effects.collect { effect ->
@@ -133,6 +137,9 @@ fun TodayScreen(
                 item(key = "recap") {
                     WeeklyRecapCard(recap = recap, modifier = Modifier.padding(horizontal = 16.dp).animateItem(), onDismiss = { vm.markShown(recap.key) })
                 }
+            }
+            items(snap.activePrograms, key = { "program-${it.program.id}" }) { p ->
+                ProgramCard(p = p, modifier = Modifier.padding(horizontal = 16.dp).animateItem(), onMenu = { programMenu = p })
             }
             if (snap.quests.isNotEmpty()) {
                 item(key = "quests") { WeeklyQuestsCard(quests = snap.quests, today = snap.today, modifier = Modifier.padding(horizontal = 16.dp)) }
@@ -216,6 +223,29 @@ fun TodayScreen(
                     fontWeight = FontWeight.Bold,
                 )
             }
+        }
+
+        programMenu?.let { p ->
+            val template = container.templateRepository.programById(p.program.templateId)
+            AlertDialog(
+                onDismissRequest = { programMenu = null },
+                title = { Text(p.program.title) },
+                text = {
+                    Text(
+                        if (p.program.strict && template != null) "Start over resets the count to day 1 from today. Leave archives its goals; your history stays."
+                        else "Leave archives this program's goals from tomorrow. Everything you've logged stays in your history.",
+                    )
+                },
+                confirmButton = {
+                    Row {
+                        if (p.program.strict && template != null) {
+                            TextButton(onClick = { vm.restartProgram(p, template); programMenu = null }) { Text("Start over") }
+                        }
+                        TextButton(onClick = { vm.leaveProgram(p); programMenu = null }) { Text("Leave", color = MaterialTheme.colorScheme.error) }
+                    }
+                },
+                dismissButton = { TextButton(onClick = { programMenu = null }) { Text("Keep going") } },
+            )
         }
 
         actionsFor?.let { goal ->

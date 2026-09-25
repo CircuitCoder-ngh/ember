@@ -6,6 +6,7 @@ import com.nhowe.ember.data.db.entity.CompletionEntity
 import com.nhowe.ember.data.db.entity.DayOverrideEntity
 import com.nhowe.ember.data.db.entity.GoalEntity
 import com.nhowe.ember.data.db.entity.GoalVersionEntity
+import com.nhowe.ember.data.db.entity.ProgramEntity
 import com.nhowe.ember.domain.model.History
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -19,12 +20,14 @@ class HistoryRepository(private val db: EmberDatabase) {
         db.goalVersionDao().observeAll(),
         db.completionDao().observeAll(),
         db.dayOverrideDao().observeAll(),
-    ) { goals, versions, completions, overrides ->
+        db.programDao().observeAll(),
+    ) { goals, versions, completions, overrides, programs ->
         History(
             goals = goals.map { it.toDomain() },
             versions = versions.map { it.toDomain() },
             completions = completions.map { it.toDomain() },
             overrides = overrides.map { it.toDomain() },
+            programs = programs.map { it.toDomain() },
         )
     }
 
@@ -35,6 +38,7 @@ class HistoryRepository(private val db: EmberDatabase) {
 
     suspend fun replaceAll(history: History) {
         db.celebrationDao().deleteAll()
+        db.programDao().deleteAll()
         db.dayOverrideDao().deleteAll()
         db.completionDao().deleteAll()
         db.goalVersionDao().deleteAll()
@@ -43,6 +47,7 @@ class HistoryRepository(private val db: EmberDatabase) {
         db.goalVersionDao().upsertAll(history.versions.map { GoalVersionEntity.from(it) })
         db.completionDao().upsertAll(history.completions.map { CompletionEntity.from(it) })
         db.dayOverrideDao().upsertAll(history.overrides.map { DayOverrideEntity.from(it) })
+        db.programDao().upsertAll(history.programs.map { ProgramEntity.from(it) })
     }
 
     suspend fun clearAll() = replaceAll(History())

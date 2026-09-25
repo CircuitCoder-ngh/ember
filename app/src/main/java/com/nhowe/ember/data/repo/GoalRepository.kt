@@ -57,26 +57,31 @@ class GoalRepository(
             versionDao.upsert(draft.toEntity(goalId, validFrom = date, validTo = date, id = latest?.id))
             return
         }
-        val open = versionDao.openVersion(goalId)
+        // Operate on the version in force today so pre-dated future phases (programs) stay intact.
+        val todayInt = today.toEpochDayInt()
+        val current = versionDao.versionOn(goalId, todayInt)
         when {
-            open == null -> versionDao.upsert(draft.toEntity(goalId, validFrom = today, validTo = null))
-            open.validFrom >= today.toEpochDayInt() ->
-                versionDao.upsert(draft.toEntity(goalId, validFrom = today, validTo = null, id = open.id))
+            current == null -> {
+                val next = versionDao.nextVersionAfter(goalId, todayInt)
+                val end = next?.let { LocalDate.ofEpochDay((it.validFrom - 1).toLong()) }
+                versionDao.upsert(draft.toEntity(goalId, validFrom = today, validTo = end))
+            }
+            current.validFrom == todayInt ->
+                versionDao.upsert(draft.toEntity(goalId, validFrom = today, validTo = current.validTo?.let { LocalDate.ofEpochDay(it.toLong()) }, id = current.id))
             else -> {
-                versionDao.setValidTo(open.id, today.minusDays(1).toEpochDayInt())
-                versionDao.upsert(draft.toEntity(goalId, validFrom = today, validTo = null))
+                versionDao.setValidTo(current.id, todayInt - 1)
+                versionDao.upsert(draft.toEntity(goalId, validFrom = today, validTo = current.validTo?.let { LocalDate.ofEpochDay(it.toLong()) }))
             }
         }
     }
 
     /** Stops the goal from applying from tomorrow on (or from today if it has no progress today). */
     suspend fun archive(goalId: String, today: LocalDate, hasProgressToday: Boolean) {
-        val open = versionDao.openVersion(goalId)
-        if (open != null) {
-            val lastDay = if (hasProgressToday) today else today.minusDays(1)
-            if (open.validFrom > lastDay.toEpochDayInt()) versionDao.delete(open.id)
-            else versionDao.setValidTo(open.id, lastDay.toEpochDayInt())
-        }
+        val lastDay = if (hasProgressToday) today else today.minusDays(1)
+        val lastInt = lastDay.toEpochDayInt()
+        // Close whatever is in force on the last day and drop every future phase.
+        versionDao.versionOn(goalId, lastInt)?.let { versionDao.setValidTo(it.id, lastInt) }
+        versionDao.deleteVersionsAfter(goalId, lastInt)
         goalDao.setArchived(goalId, System.currentTimeMillis())
     }
 

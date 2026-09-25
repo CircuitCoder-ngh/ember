@@ -8,6 +8,7 @@ import com.nhowe.ember.data.db.entity.CompletionEntity
 import com.nhowe.ember.data.db.entity.DayOverrideEntity
 import com.nhowe.ember.data.db.entity.GoalEntity
 import com.nhowe.ember.data.db.entity.GoalVersionEntity
+import com.nhowe.ember.data.db.entity.ProgramEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -53,6 +54,19 @@ interface GoalVersionDao {
 
     @Query("SELECT * FROM goal_version WHERE goalId = :goalId ORDER BY validFrom DESC LIMIT 1")
     suspend fun latestVersion(goalId: String): GoalVersionEntity?
+
+    /** The version in force on [date], if any. */
+    @Query("SELECT * FROM goal_version WHERE goalId = :goalId AND validFrom <= :date AND (validTo IS NULL OR validTo >= :date) LIMIT 1")
+    suspend fun versionOn(goalId: String, date: Int): GoalVersionEntity?
+
+    @Query("SELECT * FROM goal_version WHERE goalId = :goalId AND validFrom > :date ORDER BY validFrom LIMIT 1")
+    suspend fun nextVersionAfter(goalId: String, date: Int): GoalVersionEntity?
+
+    @Query("DELETE FROM goal_version WHERE goalId = :goalId AND validFrom > :date")
+    suspend fun deleteVersionsAfter(goalId: String, date: Int)
+
+    @Query("DELETE FROM goal_version WHERE goalId = :goalId")
+    suspend fun deleteAllFor(goalId: String)
 
     @Upsert
     suspend fun upsert(version: GoalVersionEntity)
@@ -106,6 +120,33 @@ interface DayOverrideDao {
     suspend fun delete(goalId: String, date: Int)
 
     @Query("DELETE FROM day_override")
+    suspend fun deleteAll()
+}
+
+@Dao
+interface ProgramDao {
+    @Query("SELECT * FROM program ORDER BY startDate")
+    fun observeAll(): Flow<List<ProgramEntity>>
+
+    @Query("SELECT * FROM program WHERE id = :id")
+    suspend fun get(id: String): ProgramEntity?
+
+    @Upsert
+    suspend fun upsert(program: ProgramEntity)
+
+    @Upsert
+    suspend fun upsertAll(programs: List<ProgramEntity>)
+
+    @Query("UPDATE program SET abandonedOn = :date WHERE id = :id")
+    suspend fun setAbandoned(id: String, date: Int?)
+
+    @Query("UPDATE program SET startDate = :start WHERE id = :id")
+    suspend fun setStart(id: String, start: Int)
+
+    @Query("DELETE FROM program WHERE id = :id")
+    suspend fun delete(id: String)
+
+    @Query("DELETE FROM program")
     suspend fun deleteAll()
 }
 

@@ -77,6 +77,7 @@ data class History(
     val versions: List<GoalVersion> = emptyList(),
     val completions: List<Completion> = emptyList(),
     val overrides: List<DayOverride> = emptyList(),
+    val programs: List<Program> = emptyList(),
 ) {
     val firstDate: LocalDate? get() = versions.minOfOrNull { it.validFrom }
 }

@@ -27,7 +27,9 @@ object Engine {
         val baseXp = XpEngine.compute(plans, streak.streakByDay, today, periodXp).xpByDay
         val allQuests = QuestEngine.allWeeks(history, plans, periods, baseXp, settings.streakThreshold, today)
         val questXp = QuestEngine.xpByDay(allQuests)
-        val extraXp = (periodXp.keys + questXp.keys).associateWith { (periodXp[it] ?: 0) + (questXp[it] ?: 0) }
+        val programs = ProgramEngine.progressAll(history, plans, today)
+        val programXp = ProgramEngine.xpByDay(programs)
+        val extraXp = (periodXp.keys + questXp.keys + programXp.keys).associateWith { (periodXp[it] ?: 0) + (questXp[it] ?: 0) + (programXp[it] ?: 0) }
         val xp = XpEngine.compute(plans, streak.streakByDay, today, extraXp)
         val thisWeek = allQuests.filter { it.weekStart == today.startOfWeek() }
         val badges = BadgeEngine.compute(plans, streak, xp, today)
@@ -42,6 +44,9 @@ object Engine {
             ?.takeIf { it.completedOn == today }
             ?.let { events += CelebrationEvent.ComebackComplete(today, it.freezeGranted, it.brokenStreak) }
         thisWeek.filter { it.completedOn == today }.forEach { events += CelebrationEvent.QuestComplete(it) }
+        programs.filter { it.graduatedOn != null && it.graduatedOn!! >= today.minusDays(7) }.forEach { p ->
+            events += CelebrationEvent.ProgramGraduated(p.program.id, p.program.title, p.program.graduationTitle, p.program.graduationIcon, p.program.graduationXp, p.program.nextTemplateId)
+        }
         val levelBefore = XpEngine.levelFor(xp.totalXp - xp.todayXp)
         if (xp.level > levelBefore) events += CelebrationEvent.LevelUp(xp.level, xp.levelTitle)
         badges.filterValues { it == today }.keys.forEach { badge: Badge -> events += CelebrationEvent.BadgeEarned(badge) }
@@ -59,6 +64,8 @@ object Engine {
             periods = periods,
             quests = thisWeek,
             allQuests = allQuests,
+            programs = programs,
+            programBadges = ProgramEngine.badges(programs),
         )
     }
 }

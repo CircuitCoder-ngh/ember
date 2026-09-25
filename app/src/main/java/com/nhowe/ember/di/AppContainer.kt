@@ -6,6 +6,7 @@ import com.nhowe.ember.core.time.DayClock
 import com.nhowe.ember.data.db.EmberDatabase
 import com.nhowe.ember.data.repo.GoalRepository
 import com.nhowe.ember.data.repo.HistoryRepository
+import com.nhowe.ember.data.repo.ProgramRepository
 import com.nhowe.ember.data.repo.ProgressRepository
 import com.nhowe.ember.data.repo.SettingsRepository
 import com.nhowe.ember.data.templates.TemplateRepository
@@ -38,6 +39,7 @@ class AppContainer(context: Context) {
     val historyRepository = HistoryRepository(db)
     val goalRepository = GoalRepository(db.goalDao(), db.goalVersionDao())
     val progressRepository = ProgressRepository(db.completionDao(), db.dayOverrideDao())
+    val programRepository = ProgramRepository(db)
     val dayClock = DayClock()
     val haptics = Haptics(context, settingsRepository.settings, appScope)
     val reminderScheduler = ReminderScheduler(context)

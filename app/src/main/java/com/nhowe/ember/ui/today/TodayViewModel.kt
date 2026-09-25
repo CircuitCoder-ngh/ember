@@ -34,6 +34,16 @@ class TodayViewModel(private val c: AppContainer) : ViewModel() {
     val settings: Flow<Settings> = c.settingsRepository.settings
     val shownKeys: Flow<Set<String>> = c.historyRepository.shownCelebrationKeys
 
+    fun leaveProgram(p: com.nhowe.ember.domain.model.ProgramProgress) {
+        c.haptics.click()
+        viewModelScope.launch { c.programRepository.leave(p.program, c.today.value) }
+    }
+
+    fun restartProgram(p: com.nhowe.ember.domain.model.ProgramProgress, template: com.nhowe.ember.data.templates.ProgramTemplate) {
+        c.haptics.heavy()
+        viewModelScope.launch { c.programRepository.restart(p.program, template, c.today.value) }
+    }
+
     fun markShown(key: String) { viewModelScope.launch { c.historyRepository.markCelebrationShown(key) } }
 
     private val _effects = Channel<TodayEffect>(Channel.BUFFERED)

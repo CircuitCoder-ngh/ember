@@ -80,6 +80,7 @@ sealed class CelebrationEvent(val key: String) {
     data class BadgeEarned(val badge: Badge) : CelebrationEvent("badge:${badge.name}")
     data class ComebackComplete(val date: LocalDate, val freezeGranted: Boolean, val brokenStreak: Int) : CelebrationEvent("comeback:$date")
     data class QuestComplete(val quest: WeeklyQuest) : CelebrationEvent("quest:${quest.weekStart}:${quest.id}")
+    data class ProgramGraduated(val programId: String, val title: String, val badgeTitle: String, val badgeIcon: String, val xp: Int, val nextTemplateId: String?) : CelebrationEvent("program:$programId")
 }
 
 /** Everything derived from history + settings for a given "today". */
@@ -98,7 +99,10 @@ data class EngineSnapshot(
     val quests: List<WeeklyQuest> = emptyList(),
     /** Quests from every week so far, for stats and recaps. */
     val allQuests: List<WeeklyQuest> = emptyList(),
+    val programs: List<ProgramProgress> = emptyList(),
+    val programBadges: List<EarnedBadge> = emptyList(),
 ) {
+    val activePrograms: List<ProgramProgress> get() = programs.filter { it.isActive && it.dayIndex >= 1 }
     fun periodFor(goalId: String, date: LocalDate): PeriodGoalProgress? =
         periods.firstOrNull { it.goal.id == goalId && it.contains(date) }
 

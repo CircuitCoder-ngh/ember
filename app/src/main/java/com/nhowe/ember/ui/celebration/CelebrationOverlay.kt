@@ -111,6 +111,20 @@ fun CelebrationOverlay(event: CelebrationEvent, snapshot: EngineSnapshot, onDism
                         Text("Pick it in Settings › Style", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
+                is CelebrationEvent.ProgramGraduated -> {
+                    Box(Modifier.size(84.dp).clip(CircleShape).background(MaterialTheme.ember.perfect.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
+                        Text(event.badgeIcon, style = MaterialTheme.typography.displaySmall)
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    Text("Graduated", style = MaterialTheme.typography.displaySmall, color = MaterialTheme.ember.perfect, modifier = Modifier.scale(textScale), textAlign = TextAlign.Center)
+                    Text(event.title, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(10.dp))
+                    Text("Badge earned: ${event.badgeTitle} · +${event.xp} XP", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+                    if (event.nextTemplateId != null) {
+                        Spacer(Modifier.height(8.dp))
+                        Text("What's next? There's a follow-on program waiting under Goals › Browse bundles › Programs.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+                    }
+                }
                 is CelebrationEvent.QuestComplete -> {
                     Text("Quest complete", style = MaterialTheme.typography.displaySmall, color = MaterialTheme.ember.xp, modifier = Modifier.scale(textScale), textAlign = TextAlign.Center)
                     Spacer(Modifier.height(10.dp))

@@ -53,6 +53,7 @@ import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.ui.components.ScreenHeader
 import com.nhowe.ember.ui.components.SectionLabel
 import com.nhowe.ember.ui.components.WeeklyRecapCard
+import com.nhowe.ember.ui.components.ProgramCard
 import com.nhowe.ember.domain.engine.RecapEngine
 import com.nhowe.ember.domain.model.Unlocks
 import com.nhowe.ember.domain.model.FlameForm
@@ -104,6 +105,10 @@ fun StatsScreen(onOpenSettings: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
         )
+        if (snap.activePrograms.isNotEmpty()) {
+            SectionLabel("Programs", Modifier.padding(top = 8.dp))
+            snap.activePrograms.forEach { p -> ProgramCard(p = p, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) }
+        }
         val lastWeek = remember(snap) { RecapEngine.recap(today.startOfWeek().minusWeeks(1), snap) }
         if (lastWeek != null) {
             SectionLabel("Last week", Modifier.padding(top = 8.dp))
@@ -137,6 +142,22 @@ fun StatsScreen(onOpenSettings: () -> Unit) {
             }
         }
 
+        if (snap.programBadges.isNotEmpty()) {
+            SectionLabel("Program badges · ${snap.programBadges.size}", Modifier.padding(top = 8.dp))
+            FlowRow(Modifier.padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                snap.programBadges.forEach { b ->
+                    Column(
+                        Modifier.width(104.dp).clip(MaterialTheme.shapes.medium).background(MaterialTheme.colorScheme.surfaceContainer).padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Box(Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.ember.perfect.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) { Text(b.icon, style = MaterialTheme.typography.titleLarge) }
+                        Spacer(Modifier.height(6.dp))
+                        Text(b.title, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        Text(b.earnedOn.format(DateTimeFormatter.ofPattern("MMM d")), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+        }
         SectionLabel("Badges · ${snap.badges.size} of ${Badge.entries.size}", Modifier.padding(top = 8.dp))
         BadgeGroup.entries.forEach { group ->
             FlowRow(Modifier.padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

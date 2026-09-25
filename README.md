@@ -31,6 +31,12 @@ your best day, check them off, and watch your streak, XP and calendar fill in. E
   Fitness, Mind, Learning, Creative, Money & home, Faith & seasonal). Onboarding asks what you want to work
   on and offers matching bundles; the Goals tab has "Browse bundles" for later. A stacking guard warns when
   you'd be starting more daily goals than most people sustain. Goals you already have are skipped by title.
+- **Programs**: multi-week plans from `app/src/main/assets/programs.json` (5K and 10K plans, push-up builder,
+  plank challenge, meditation, sleep reset, creative recovery, tiny habits, 100 days of code, a strict 75-day
+  challenge, savings and minimalism games, a novel month). Enrolling writes one pre-dated goal version per phase,
+  so targets and titles change on schedule and history stays exact. Today shows "Week 3 of 9"; strict programs
+  count unbroken days and can be restarted; graduation awards a badge and XP. Editing or archiving a program goal
+  only touches the version in force today and leaves future phases intact.
 - **The flame evolves** through six forms with level (Spark → Ember → Flame → Blaze → Inferno → Supernova), and
   levels unlock flame skins and app accent themes chosen under Settings › Style.
 
