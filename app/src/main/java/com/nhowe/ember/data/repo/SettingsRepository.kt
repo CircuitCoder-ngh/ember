@@ -9,6 +9,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.nhowe.ember.domain.model.AccentTheme
+import com.nhowe.ember.domain.model.FlameSkin
 import com.nhowe.ember.domain.model.Settings
 import com.nhowe.ember.domain.model.ThemeMode
 import java.time.LocalTime
@@ -36,6 +38,8 @@ class SettingsRepository(context: Context) {
         val onboardingDone = booleanPreferencesKey("onboarding_done")
         val sinkCompleted = booleanPreferencesKey("sink_completed")
         val userName = stringPreferencesKey("user_name")
+        val flameSkin = stringPreferencesKey("flame_skin")
+        val accentTheme = stringPreferencesKey("accent_theme")
     }
 
     val settings: Flow<Settings> = store.data.map { p ->
@@ -55,6 +59,8 @@ class SettingsRepository(context: Context) {
             onboardingDone = p[Keys.onboardingDone] ?: false,
             completedSinkToBottom = p[Keys.sinkCompleted] ?: true,
             userName = p[Keys.userName] ?: "",
+            flameSkin = p[Keys.flameSkin]?.let { runCatching { FlameSkin.valueOf(it) }.getOrNull() } ?: FlameSkin.CLASSIC,
+            accentTheme = p[Keys.accentTheme]?.let { runCatching { AccentTheme.valueOf(it) }.getOrNull() } ?: AccentTheme.EMBER,
         )
     }
 
@@ -74,6 +80,8 @@ class SettingsRepository(context: Context) {
     suspend fun setDynamicColor(enabled: Boolean) = store.edit { it[Keys.dynamicColor] = enabled }
     suspend fun setOnboardingDone(done: Boolean) = store.edit { it[Keys.onboardingDone] = done }
     suspend fun setSinkCompleted(enabled: Boolean) = store.edit { it[Keys.sinkCompleted] = enabled }
+    suspend fun setFlameSkin(skin: FlameSkin) = store.edit { it[Keys.flameSkin] = skin.name }
+    suspend fun setAccentTheme(theme: AccentTheme) = store.edit { it[Keys.accentTheme] = theme.name }
     suspend fun setUserName(name: String) = store.edit { it[Keys.userName] = name.trim() }
 
     suspend fun replaceAll(s: Settings) = store.edit {
@@ -92,5 +100,7 @@ class SettingsRepository(context: Context) {
         it[Keys.onboardingDone] = s.onboardingDone
         it[Keys.sinkCompleted] = s.completedSinkToBottom
         it[Keys.userName] = s.userName
+        it[Keys.flameSkin] = s.flameSkin.name
+        it[Keys.accentTheme] = s.accentTheme.name
     }
 }

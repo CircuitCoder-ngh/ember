@@ -21,4 +21,6 @@ data class Settings(
     val onboardingDone: Boolean = false,
     val completedSinkToBottom: Boolean = true,
     val userName: String = "",
+    val flameSkin: FlameSkin = FlameSkin.CLASSIC,
+    val accentTheme: AccentTheme = AccentTheme.EMBER,
 )

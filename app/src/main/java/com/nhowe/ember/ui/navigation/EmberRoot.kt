@@ -30,7 +30,7 @@ fun EmberRoot() {
     val settings by container.settingsRepository.settings.collectAsStateWithLifecycle(initialValue = null)
     val current = settings ?: return
 
-    EmberTheme(mode = current.themeMode, dynamicColor = current.dynamicColor) {
+    EmberTheme(mode = current.themeMode, dynamicColor = current.dynamicColor, accent = current.accentTheme) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background, contentColor = MaterialTheme.colorScheme.onBackground) {
             val start = remember { if (current.onboardingDone) HomeRoute else OnboardingRoute }
             val backStack = rememberNavBackStack(start)

@@ -32,6 +32,9 @@ sealed interface TodayEffect {
 class TodayViewModel(private val c: AppContainer) : ViewModel() {
     val snapshot: StateFlow<EngineSnapshot?> = c.engineStore.snapshot
     val settings: Flow<Settings> = c.settingsRepository.settings
+    val shownKeys: Flow<Set<String>> = c.historyRepository.shownCelebrationKeys
+
+    fun markShown(key: String) { viewModelScope.launch { c.historyRepository.markCelebrationShown(key) } }
 
     private val _effects = Channel<TodayEffect>(Channel.BUFFERED)
     val effects: Flow<TodayEffect> = _effects.receiveAsFlow()

@@ -5,6 +5,7 @@ import com.nhowe.ember.domain.model.CelebrationEvent
 import com.nhowe.ember.domain.model.EngineSnapshot
 import com.nhowe.ember.domain.model.History
 import com.nhowe.ember.domain.model.Settings
+import com.nhowe.ember.core.time.startOfWeek
 import java.time.LocalDate
 
 /** Pure entry point: history + settings + today -> everything the UI shows. */
@@ -21,7 +22,14 @@ object Engine {
         val scores = plans.mapValues { it.value.score }.toSortedMap()
         val streak = StreakEngine.compute(scores, today, settings.streakThreshold)
         val periods = PeriodResolver.resolveRange(start, today, history)
-        val xp = XpEngine.compute(plans, streak.streakByDay, today, PeriodResolver.xpByDay(periods))
+        val periodXp = PeriodResolver.xpByDay(periods)
+        // Quests are scored on base XP (days + periodic goals) so an XP quest cannot feed itself.
+        val baseXp = XpEngine.compute(plans, streak.streakByDay, today, periodXp).xpByDay
+        val allQuests = QuestEngine.allWeeks(history, plans, periods, baseXp, settings.streakThreshold, today)
+        val questXp = QuestEngine.xpByDay(allQuests)
+        val extraXp = (periodXp.keys + questXp.keys).associateWith { (periodXp[it] ?: 0) + (questXp[it] ?: 0) }
+        val xp = XpEngine.compute(plans, streak.streakByDay, today, extraXp)
+        val thisWeek = allQuests.filter { it.weekStart == today.startOfWeek() }
         val badges = BadgeEngine.compute(plans, streak, xp, today)
 
         val events = ArrayList<CelebrationEvent>()
@@ -33,6 +41,7 @@ object Engine {
         streak.state.completedQuests.lastOrNull()
             ?.takeIf { it.completedOn == today }
             ?.let { events += CelebrationEvent.ComebackComplete(today, it.freezeGranted, it.brokenStreak) }
+        thisWeek.filter { it.completedOn == today }.forEach { events += CelebrationEvent.QuestComplete(it) }
         val levelBefore = XpEngine.levelFor(xp.totalXp - xp.todayXp)
         if (xp.level > levelBefore) events += CelebrationEvent.LevelUp(xp.level, xp.levelTitle)
         badges.filterValues { it == today }.keys.forEach { badge: Badge -> events += CelebrationEvent.BadgeEarned(badge) }
@@ -48,6 +57,8 @@ object Engine {
             badges = badges,
             pendingCelebrations = events.filter { it.key !in shownCelebrationKeys },
             periods = periods,
+            quests = thisWeek,
+            allQuests = allQuests,
         )
     }
 }

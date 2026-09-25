@@ -54,7 +54,21 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nhowe.ember.di.LocalAppContainer
 import com.nhowe.ember.domain.engine.Engine
+import com.nhowe.ember.domain.model.AccentTheme
+import com.nhowe.ember.domain.model.FlameForm
+import com.nhowe.ember.domain.model.FlameSkin
 import com.nhowe.ember.domain.model.ThemeMode
+import com.nhowe.ember.ui.components.FlameMascot
+import com.nhowe.ember.ui.components.FlameState
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import com.nhowe.ember.ui.components.SectionLabel
 import java.time.LocalDate
 import java.time.LocalTime
@@ -199,6 +213,44 @@ fun SettingsScreen(onBack: () -> Unit) {
                 SwitchRow("Completed goals sink", "Finished goals drop to the bottom of today's list", s.completedSinkToBottom) { vm.setSinkCompleted(it) }
             }
 
+            SectionLabel("Style")
+            Group {
+                val level = snapshot?.xp?.level ?: 1
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    FlameMascot(state = FlameState.BLAZING, size = 72.dp, form = FlameForm.forLevel(level), skin = s.flameSkin)
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text("${FlameForm.forLevel(level).title} form · level $level", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            FlameForm.next(level)?.let { "Evolves into ${it.title} at level ${it.minLevel}" } ?: "Fully evolved.",
+                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                Text("Flame skin", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 6.dp))
+                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    FlameSkin.entries.forEach { skin ->
+                        val unlocked = skin.unlockedAt(level)
+                        Swatch(
+                            brush = Brush.verticalGradient(listOf(Color(skin.inner), Color(skin.outer))),
+                            selected = s.flameSkin == skin, unlocked = unlocked, label = skin.title, lockLabel = "Lvl ${skin.unlockLevel}",
+                            onClick = { vm.setFlameSkin(skin) },
+                        )
+                    }
+                }
+                Text("App accent", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 6.dp))
+                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    AccentTheme.entries.forEach { theme ->
+                        val unlocked = theme.unlockedAt(level)
+                        Swatch(
+                            brush = Brush.linearGradient(listOf(Color(theme.primary), Color(theme.secondary))),
+                            selected = s.accentTheme == theme, unlocked = unlocked, label = theme.title, lockLabel = "Lvl ${theme.unlockLevel}",
+                            onClick = { vm.setAccentTheme(theme) },
+                        )
+                    }
+                }
+            }
+
             SectionLabel("Appearance")
             Group {
                 SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
@@ -277,6 +329,23 @@ fun SettingsScreen(onBack: () -> Unit) {
             confirmButton = { TextButton(onClick = { vm.importBackup(context, uri); pendingImport = null }) { Text("Restore") } },
             dismissButton = { TextButton(onClick = { pendingImport = null }) { Text("Cancel") } },
         )
+    }
+}
+
+@Composable
+private fun Swatch(brush: Brush, selected: Boolean, unlocked: Boolean, label: String, lockLabel: String, onClick: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(64.dp).alpha(if (unlocked) 1f else 0.45f)) {
+        Box(
+            Modifier
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(brush)
+                .border(if (selected) 3.dp else 0.dp, if (selected) MaterialTheme.colorScheme.onSurface else Color.Transparent, CircleShape)
+                .clickable(enabled = unlocked, onClick = onClick),
+            contentAlignment = Alignment.Center,
+        ) { if (!unlocked) Icon(Icons.Rounded.Lock, contentDescription = "Locked", tint = Color.White, modifier = Modifier.size(18.dp)) }
+        Spacer(Modifier.height(4.dp))
+        Text(if (unlocked) label else lockLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
     }
 }
 

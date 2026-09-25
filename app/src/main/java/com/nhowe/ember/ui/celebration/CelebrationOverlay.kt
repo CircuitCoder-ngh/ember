@@ -39,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nhowe.ember.domain.model.CelebrationEvent
 import com.nhowe.ember.domain.model.EngineSnapshot
+import com.nhowe.ember.domain.model.FlameForm
+import com.nhowe.ember.domain.model.Unlocks
 import com.nhowe.ember.ui.components.ConfettiOverlay
 import com.nhowe.ember.ui.components.ConfettiTrigger
 import com.nhowe.ember.ui.components.FlameMascot
@@ -65,7 +67,7 @@ fun CelebrationOverlay(event: CelebrationEvent, snapshot: EngineSnapshot, onDism
         contentAlignment = Alignment.Center,
     ) {
         Column(Modifier.padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            FlameMascot(state = if (event is CelebrationEvent.StreakMilestone && event.freezeGranted) FlameState.BLAZING else FlameState.BLAZING, size = 160.dp, modifier = Modifier.scale(flameScale))
+            FlameMascot(state = FlameState.BLAZING, size = 160.dp, modifier = Modifier.scale(flameScale), form = FlameForm.forLevel(snapshot.xp.level), skin = snapshot.settings.flameSkin)
             Spacer(Modifier.height(20.dp))
             when (event) {
                 is CelebrationEvent.StreakMilestone -> {
@@ -98,6 +100,23 @@ fun CelebrationOverlay(event: CelebrationEvent, snapshot: EngineSnapshot, onDism
                     Text(event.title, style = MaterialTheme.typography.headlineSmall)
                     Spacer(Modifier.height(10.dp))
                     Text("${snapshot.xp.totalXp} XP and climbing.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+                    val unlocks = Unlocks.atLevel(event.level)
+                    if (unlocks.isNotEmpty()) {
+                        Spacer(Modifier.height(14.dp))
+                        unlocks.forEach { u ->
+                            Box(Modifier.padding(vertical = 3.dp).clip(CircleShape).background(MaterialTheme.ember.perfect.copy(alpha = 0.18f)).padding(horizontal = 14.dp, vertical = 6.dp)) {
+                                Text("Unlocked: ${u.title}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.ember.perfect)
+                            }
+                        }
+                        Text("Pick it in Settings › Style", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                is CelebrationEvent.QuestComplete -> {
+                    Text("Quest complete", style = MaterialTheme.typography.displaySmall, color = MaterialTheme.ember.xp, modifier = Modifier.scale(textScale), textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(10.dp))
+                    Text(event.quest.title, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(10.dp))
+                    Text("+${event.quest.xpReward} XP", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.ember.xp)
                 }
                 is CelebrationEvent.ComebackComplete -> {
                     Text("Comeback complete", style = MaterialTheme.typography.displaySmall, color = MaterialTheme.ember.hit, modifier = Modifier.scale(textScale), textAlign = TextAlign.Center)

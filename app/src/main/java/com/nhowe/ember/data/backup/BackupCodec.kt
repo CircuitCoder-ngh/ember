@@ -1,6 +1,8 @@
 package com.nhowe.ember.data.backup
 
+import com.nhowe.ember.domain.model.AccentTheme
 import com.nhowe.ember.domain.model.Cadence
+import com.nhowe.ember.domain.model.FlameSkin
 import com.nhowe.ember.domain.model.Completion
 import com.nhowe.ember.domain.model.DayOverride
 import com.nhowe.ember.domain.model.Goal
@@ -53,6 +55,7 @@ data class SettingsJson(
     val completedSinkToBottom: Boolean, val userName: String,
     val hourlyEnabled: Boolean = false, val hourlyStart: String = "08:00", val hourlyEnd: String = "22:00",
     val hourlyAlert: Boolean = false,
+    val flameSkin: String = "CLASSIC", val accentTheme: String = "EMBER",
 )
 
 object BackupCodec {
@@ -74,6 +77,7 @@ object BackupCodec {
                 settings.hapticsEnabled, settings.soundEnabled, settings.themeMode.name, settings.dynamicColor,
                 settings.completedSinkToBottom, settings.userName,
                 settings.hourlyEnabled, settings.hourlyStart.toString(), settings.hourlyEnd.toString(), settings.hourlyAlert,
+                settings.flameSkin.name, settings.accentTheme.name,
             ),
         ),
     )
@@ -99,6 +103,8 @@ object BackupCodec {
             onboardingDone = true, completedSinkToBottom = s.completedSinkToBottom, userName = s.userName,
             hourlyEnabled = s.hourlyEnabled, hourlyStart = LocalTime.parse(s.hourlyStart), hourlyEnd = LocalTime.parse(s.hourlyEnd),
             hourlyAlert = s.hourlyAlert,
+            flameSkin = runCatching { FlameSkin.valueOf(s.flameSkin) }.getOrDefault(FlameSkin.CLASSIC),
+            accentTheme = runCatching { AccentTheme.valueOf(s.accentTheme) }.getOrDefault(AccentTheme.EMBER),
         )
         return history to settings
     }

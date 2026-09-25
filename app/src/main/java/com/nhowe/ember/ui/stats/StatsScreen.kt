@@ -52,6 +52,10 @@ import com.nhowe.ember.domain.model.EngineSnapshot
 import com.nhowe.ember.domain.model.GoalKind
 import com.nhowe.ember.ui.components.ScreenHeader
 import com.nhowe.ember.ui.components.SectionLabel
+import com.nhowe.ember.ui.components.WeeklyRecapCard
+import com.nhowe.ember.domain.engine.RecapEngine
+import com.nhowe.ember.domain.model.Unlocks
+import com.nhowe.ember.domain.model.FlameForm
 import com.nhowe.ember.ui.goals.GoalsViewModel
 import com.nhowe.ember.ui.theme.EmberOrange
 import com.nhowe.ember.ui.theme.ember
@@ -88,6 +92,26 @@ fun StatsScreen(onOpenSettings: () -> Unit) {
             Tile(Modifier.weight(1f), "${snap.streak.current}", "streak · best ${snap.streak.best}", EmberOrange)
             Tile(Modifier.weight(1f), "${snap.dayStates.values.count { it == DayState.PERFECT }}", "perfect days", MaterialTheme.ember.perfect)
             Tile(Modifier.weight(1f), "${snap.xp.totalXp}", "XP · level ${snap.xp.level}", MaterialTheme.ember.xp)
+        }
+
+        val nextUnlock = remember(snap.xp.level) { Unlocks.next(snap.xp.level) }
+        Text(
+            buildString {
+                append("${FlameForm.forLevel(snap.xp.level).title} form")
+                nextUnlock?.let { append(" · next unlock at level ${it.level}: ${it.title}") }
+            },
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+        )
+        val lastWeek = remember(snap) { RecapEngine.recap(today.startOfWeek().minusWeeks(1), snap) }
+        if (lastWeek != null) {
+            SectionLabel("Last week", Modifier.padding(top = 8.dp))
+            WeeklyRecapCard(recap = lastWeek, modifier = Modifier.padding(horizontal = 16.dp))
+        }
+        val questsDone = snap.allQuests.count { it.isComplete }
+        if (snap.allQuests.isNotEmpty()) {
+            Text("Quests completed: $questsDone of ${snap.allQuests.size}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
         }
 
         SectionLabel("Last 12 weeks", Modifier.padding(top = 16.dp))

@@ -54,7 +54,13 @@ import com.nhowe.ember.ui.components.ProgressRing
 import com.nhowe.ember.ui.components.ScreenHeader
 import com.nhowe.ember.ui.components.SectionLabel
 import com.nhowe.ember.ui.components.StreakChip
+import com.nhowe.ember.ui.components.WeeklyQuestsCard
+import com.nhowe.ember.ui.components.WeeklyRecapCard
 import com.nhowe.ember.ui.components.XpBar
+import com.nhowe.ember.domain.engine.RecapEngine
+import com.nhowe.ember.domain.model.FlameForm
+import com.nhowe.ember.core.time.startOfWeek
+import java.time.DayOfWeek
 import com.nhowe.ember.ui.components.flameStateFor
 import com.nhowe.ember.ui.goals.GoalActionsSheet
 import com.nhowe.ember.ui.theme.ember
@@ -74,6 +80,7 @@ fun TodayScreen(
     val vm: TodayViewModel = viewModel { TodayViewModel(container) }
     val snapshot by vm.snapshot.collectAsStateWithLifecycle()
     val settings by vm.settings.collectAsStateWithLifecycle(initialValue = null)
+    val shownKeys by vm.shownKeys.collectAsStateWithLifecycle(initialValue = emptySet())
 
     var confetti by remember { mutableStateOf<ConfettiTrigger?>(null) }
     var xpToast by remember { mutableStateOf<Int?>(null) }
@@ -97,6 +104,7 @@ fun TodayScreen(
         val score = plan.score
         val sink = settings?.completedSinkToBottom ?: true
         val ordered = if (sink) plan.goals.sortedBy { it.isDone } else plan.goals
+        val recap = remember(snap) { recapToShow(snap) }
 
         LazyColumn(
             Modifier.fillMaxSize().statusBarsPadding(),
@@ -120,6 +128,14 @@ fun TodayScreen(
                     snapshot = snap,
                     threshold = snap.settings.streakThreshold,
                 )
+            }
+            if (recap != null && recap.key !in shownKeys) {
+                item(key = "recap") {
+                    WeeklyRecapCard(recap = recap, modifier = Modifier.padding(horizontal = 16.dp).animateItem(), onDismiss = { vm.markShown(recap.key) })
+                }
+            }
+            if (snap.quests.isNotEmpty()) {
+                item(key = "quests") { WeeklyQuestsCard(quests = snap.quests, today = snap.today, modifier = Modifier.padding(horizontal = 16.dp)) }
             }
             snap.streak.quest?.let { quest ->
                 item(key = "quest") { ComebackCard(quest = quest, todaySecured = snap.streak.todaySecured, modifier = Modifier.padding(horizontal = 16.dp)) }
@@ -250,7 +266,7 @@ private fun HeroCard(
             }
             Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                FlameMascot(state = flameStateFor(snapshot), size = 110.dp)
+                FlameMascot(state = flameStateFor(snapshot), size = 110.dp, form = FlameForm.forLevel(snapshot.xp.level), skin = snapshot.settings.flameSkin)
                 Text(
                     statusLine(progress, threshold, snapshot, isRest, hasPeriodic),
                     style = MaterialTheme.typography.bodySmall,
@@ -278,6 +294,18 @@ private fun statusLine(progress: Float, threshold: Double, snap: com.nhowe.ember
         val need = ((threshold - progress) * 100).roundToInt().coerceAtLeast(1)
         "$need% more to keep the flame"
     }
+}
+
+/** Sunday from 6 pm shows this week; Monday shows last week; otherwise nothing. */
+private fun recapToShow(snap: com.nhowe.ember.domain.model.EngineSnapshot): com.nhowe.ember.domain.model.WeeklyRecap? {
+    val today = snap.today
+    val hour = java.time.LocalTime.now().hour
+    val weekStart = when {
+        today.dayOfWeek == DayOfWeek.SUNDAY && hour >= 18 -> today.startOfWeek()
+        today.dayOfWeek == DayOfWeek.MONDAY -> today.minusWeeks(1).startOfWeek()
+        else -> return null
+    }
+    return RecapEngine.recap(weekStart, snap)
 }
 
 private fun greeting(name: String): String {

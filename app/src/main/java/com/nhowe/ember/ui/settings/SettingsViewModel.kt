@@ -8,6 +8,8 @@ import com.nhowe.ember.data.backup.BackupCodec
 import com.nhowe.ember.di.AppContainer
 import com.nhowe.ember.domain.model.EngineSnapshot
 import com.nhowe.ember.domain.model.Settings
+import com.nhowe.ember.domain.model.AccentTheme
+import com.nhowe.ember.domain.model.FlameSkin
 import com.nhowe.ember.domain.model.ThemeMode
 import com.nhowe.ember.notifications.ProgressNotifier
 import java.time.Instant
@@ -35,6 +37,8 @@ class SettingsViewModel(private val c: AppContainer) : ViewModel() {
     fun setTheme(m: ThemeMode) = launch { c.settingsRepository.setTheme(m) }
     fun setDynamicColor(b: Boolean) = launch { c.settingsRepository.setDynamicColor(b) }
     fun setUserName(n: String) = launch { c.settingsRepository.setUserName(n) }
+    fun setFlameSkin(s: FlameSkin) = launch { c.haptics.click(); c.settingsRepository.setFlameSkin(s) }
+    fun setAccentTheme(t: AccentTheme) = launch { c.haptics.click(); c.settingsRepository.setAccentTheme(t) }
 
     fun setReminderEnabled(b: Boolean) = launch {
         c.settingsRepository.setReminderEnabled(b)

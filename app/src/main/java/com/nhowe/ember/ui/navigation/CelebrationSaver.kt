@@ -15,6 +15,7 @@ val CelebrationSaver: Saver<CelebrationEvent?, String> = Saver(
             is CelebrationEvent.LevelUp -> "level|${e.level}|${e.title}"
             is CelebrationEvent.BadgeEarned -> "badge|${e.badge.name}"
             is CelebrationEvent.ComebackComplete -> "comeback|${e.date}|${e.freezeGranted}|${e.brokenStreak}"
+            is CelebrationEvent.QuestComplete -> "quest|${e.quest.weekStart}|${e.quest.id}|${e.quest.title}|${e.quest.xpReward}"
         }
     },
     restore = { s ->
@@ -25,6 +26,7 @@ val CelebrationSaver: Saver<CelebrationEvent?, String> = Saver(
             "level" -> CelebrationEvent.LevelUp(parts[1].toInt(), parts[2])
             "badge" -> CelebrationEvent.BadgeEarned(Badge.valueOf(parts[1]))
             "comeback" -> CelebrationEvent.ComebackComplete(LocalDate.parse(parts[1]), parts[2].toBoolean(), parts[3].toInt())
+            "quest" -> CelebrationEvent.QuestComplete(com.nhowe.ember.domain.model.WeeklyQuest(parts[2], com.nhowe.ember.domain.model.QuestKind.XP, LocalDate.parse(parts[1]), parts[3], 1, 1, parts[4].toInt(), LocalDate.parse(parts[1])))
             else -> null
         }
     },

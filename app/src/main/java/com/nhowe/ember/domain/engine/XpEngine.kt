@@ -14,8 +14,8 @@ object XpEngine {
     const val PERFECT_BONUS = 50
 
     private val TITLES = listOf(
-        1 to "Spark", 2 to "Ember", 4 to "Flame", 7 to "Blaze",
-        10 to "Inferno", 15 to "Wildfire", 20 to "Supernova", 30 to "Eternal Flame",
+        1 to "Spark", 3 to "Ember", 5 to "Flame", 10 to "Blaze",
+        15 to "Inferno", 20 to "Supernova", 30 to "Eternal Flame",
     )
 
     /** XP earned on a day. Streak multiplier: +10% per full week of streak, capped at +50%. */

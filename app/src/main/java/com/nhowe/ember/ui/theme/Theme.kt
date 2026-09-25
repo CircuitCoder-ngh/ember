@@ -12,6 +12,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.lerp
+import com.nhowe.ember.domain.model.AccentTheme
 import com.nhowe.ember.domain.model.ThemeMode
 
 /** Semantic colors that Material's scheme has no slot for. */
@@ -89,10 +91,26 @@ private val LightScheme = lightColorScheme(
     onError = Color.White,
 )
 
+private fun accented(base: androidx.compose.material3.ColorScheme, accent: AccentTheme, dark: Boolean): androidx.compose.material3.ColorScheme {
+    if (accent == AccentTheme.EMBER) return base
+    val p = Color(accent.primary); val s = Color(accent.secondary); val t = Color(accent.tertiary)
+    val bg = if (dark) Night else Day
+    val fg = if (dark) Color.White else Color(0xFF1B1A22)
+    fun container(c: Color) = lerp(c, bg, if (dark) 0.72f else 0.78f)
+    fun onContainer(c: Color) = lerp(c, fg, 0.75f)
+    val primary = if (dark) p else lerp(p, Color.Black, 0.18f)
+    return base.copy(
+        primary = primary, onPrimary = Color.White, primaryContainer = container(p), onPrimaryContainer = onContainer(p),
+        secondary = if (dark) s else lerp(s, Color.Black, 0.3f), onSecondary = if (dark) Color(0xFF1B1A22) else Color.White, secondaryContainer = container(s), onSecondaryContainer = onContainer(s),
+        tertiary = t, onTertiary = Color.White, tertiaryContainer = container(t), onTertiaryContainer = onContainer(t),
+    )
+}
+
 @Composable
 fun EmberTheme(
     mode: ThemeMode = ThemeMode.DARK,
     dynamicColor: Boolean = false,
+    accent: AccentTheme = AccentTheme.EMBER,
     content: @Composable () -> Unit,
 ) {
     val dark = when (mode) {
@@ -104,8 +122,8 @@ fun EmberTheme(
     val scheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
             if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        dark -> DarkScheme
-        else -> LightScheme
+        dark -> accented(DarkScheme, accent, true)
+        else -> accented(LightScheme, accent, false)
     }
     val emberColors = if (dark) {
         EmberColors(perfect = Gold, hit = Mint, miss = Rose, frozen = Ice, xp = Violet, rest = NightTextMuted, ringTrack = NightSurfaceHighest)

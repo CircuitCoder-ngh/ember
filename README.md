@@ -23,6 +23,12 @@ your best day, check them off, and watch your streak, XP and calendar fill in. E
 - Optional **hourly progress card**: a silent notification listing what's still open today, your %, streak and a
   quote, refreshed every hour and whenever you check something off. Optional **daily nudge** at a set time.
 - Huge one-off goals are starred on the calendar and listed under **Coming up**.
+- **Weekly quests**: two fresh targets every Monday ("Hit 100% on 3 days", "Log a weekly goal 3 times"), picked
+  deterministically per week and scored from history; 75 XP each.
+- **Weekly recap**: a Sunday-evening card (also Monday, and always under Progress) with the week's score, best
+  day, goals nailed, XP, quests, and one observation.
+- **The flame evolves** through six forms with level (Spark → Ember → Flame → Blaze → Inferno → Supernova), and
+  levels unlock flame skins and app accent themes chosen under Settings › Style.
 
 ## Layout
 
