@@ -89,3 +89,49 @@ class StreakEngineTest {
         assertEquals(listOf(1, 2, 0, 1), r.streakByDay.values.toList())
     }
 }
+
+class ComebackQuestTest {
+    private fun run(vararg values: Double?): StreakEngine.Result {
+        val (map, today) = scores(START, *values)
+        return StreakEngine.compute(map, today, 0.8)
+    }
+
+    @Test
+    fun `breaking a 3-day streak opens a quest that earns a freeze after 3 hits`() {
+        val r = run(1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0)
+        assertEquals(1, r.state.freezesHeld)
+        assertEquals(null, r.state.quest)
+        val q = r.state.completedQuests.single()
+        assertEquals(3, q.brokenStreak)
+        assertEquals(START.plusDays(6), q.completedOn)
+        assertTrue(q.freezeGranted)
+    }
+
+    @Test
+    fun `quest progress resets on a miss but the quest stays open`() {
+        val r = run(1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0)
+        val q = r.state.quest!!
+        assertEquals(2, q.progress)
+        assertEquals(0, r.state.freezesHeld)
+    }
+
+    @Test
+    fun `a short streak breaking does not start a quest`() {
+        val r = run(1.0, 1.0, 0.0, 1.0)
+        assertEquals(null, r.state.quest)
+    }
+
+    @Test
+    fun `today pending does not count toward the quest yet`() {
+        val r = run(1.0, 1.0, 1.0, 0.0, 1.0, 0.5)
+        assertEquals(1, r.state.quest!!.progress)
+        assertFalse(r.state.todaySecured)
+    }
+
+    @Test
+    fun `rest days are neutral during a quest`() {
+        val r = run(1.0, 1.0, 1.0, 0.0, 1.0, null, 1.0, 1.0)
+        assertEquals(1, r.state.freezesHeld)
+        assertTrue(r.state.completedQuests.single().freezeGranted)
+    }
+}

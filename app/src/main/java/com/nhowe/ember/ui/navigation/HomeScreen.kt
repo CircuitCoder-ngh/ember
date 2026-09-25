@@ -140,6 +140,7 @@ fun HomeScreen(
 
 private fun priority(e: CelebrationEvent): Int = when (e) {
     is CelebrationEvent.StreakMilestone -> 0
+    is CelebrationEvent.ComebackComplete -> 0
     is CelebrationEvent.LevelUp -> 1
     is CelebrationEvent.PerfectDay -> 2
     is CelebrationEvent.BadgeEarned -> 3

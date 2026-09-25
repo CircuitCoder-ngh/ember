@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nhowe.ember.di.LocalAppContainer
 import com.nhowe.ember.domain.model.ResolvedGoal
+import com.nhowe.ember.ui.components.ComebackCard
 import com.nhowe.ember.ui.components.ConfettiOverlay
 import com.nhowe.ember.ui.components.ConfettiTrigger
 import com.nhowe.ember.ui.components.FlameMascot
@@ -119,6 +120,9 @@ fun TodayScreen(
                     snapshot = snap,
                     threshold = snap.settings.streakThreshold,
                 )
+            }
+            snap.streak.quest?.let { quest ->
+                item(key = "quest") { ComebackCard(quest = quest, todaySecured = snap.streak.todaySecured, modifier = Modifier.padding(horizontal = 16.dp)) }
             }
             if (plan.hasGoals) {
                 item(key = "label") { SectionLabel("Today's goals") }
@@ -268,6 +272,7 @@ private fun statusLine(progress: Float, threshold: Double, snap: com.nhowe.ember
     isRest && hasPeriodic -> "No daily goals today. Chip away at the week."
     isRest -> "Nothing scheduled. Rest up."
     progress >= 0.999f -> "Perfect day. Legendary."
+    snap.streak.todaySecured && snap.streak.quest != null -> "Comeback day ${snap.streak.quest.progress} of ${snap.streak.quest.target} banked."
     snap.streak.todaySecured -> "Streak secured. Push for perfect?"
     else -> {
         val need = ((threshold - progress) * 100).roundToInt().coerceAtLeast(1)

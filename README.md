@@ -14,6 +14,8 @@ your best day, check them off, and watch your streak, XP and calendar fill in. E
 - The **streak** continues while a day's score meets your threshold (default 80%). Perfect days (100%) get
   extra recognition. Today never breaks a streak until the day rolls over.
 - Milestones (3, 7, 14, 30, 50, 100, …) award **streak freezes** (max 2) that automatically cover a missed day.
+- Breaking a streak of 3+ days opens a **comeback quest**: hit your bar 3 days in a row and earn a freeze back.
+  A miss during the quest restarts its progress; rest days are neutral.
 - **XP** per goal, a perfect-day bonus and a streak multiplier feed **levels** and **badges**.
 - **Editing a goal never rewrites history.** Each edit closes the old definition yesterday and opens a new one
   today, so past days always show the goal exactly as it was.

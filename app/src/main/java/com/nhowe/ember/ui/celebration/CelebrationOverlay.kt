@@ -99,6 +99,23 @@ fun CelebrationOverlay(event: CelebrationEvent, snapshot: EngineSnapshot, onDism
                     Spacer(Modifier.height(10.dp))
                     Text("${snapshot.xp.totalXp} XP and climbing.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
                 }
+                is CelebrationEvent.ComebackComplete -> {
+                    Text("Comeback complete", style = MaterialTheme.typography.displaySmall, color = MaterialTheme.ember.hit, modifier = Modifier.scale(textScale), textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        "Three days on target after losing a ${event.brokenStreak}-day streak. That's the hard part, and you did it.",
+                        style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        Modifier.clip(CircleShape).background(MaterialTheme.ember.frozen.copy(alpha = 0.18f)).padding(horizontal = 14.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Rounded.AcUnit, contentDescription = null, tint = MaterialTheme.ember.frozen, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(if (event.freezeGranted) "+1 Streak Freeze earned back" else "Freezes already full. Nice.", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.ember.frozen)
+                    }
+                }
                 is CelebrationEvent.BadgeEarned -> {
                     Box(Modifier.size(84.dp).clip(CircleShape).background(MaterialTheme.ember.perfect.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
                         Text(event.badge.icon, style = MaterialTheme.typography.displaySmall)

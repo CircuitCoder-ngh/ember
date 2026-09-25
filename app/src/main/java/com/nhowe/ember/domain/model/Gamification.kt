@@ -4,6 +4,21 @@ import java.time.LocalDate
 
 data class Milestone(val days: Int, val reachedOn: LocalDate)
 
+/**
+ * Softens a broken streak: hit the bar [target] days in a row after a break and earn a freeze back.
+ * A miss during the quest restarts its progress; rest days are neutral.
+ */
+data class ComebackQuest(
+    val startedOn: LocalDate,
+    val brokenStreak: Int,
+    val progress: Int = 0,
+    val target: Int = 3,
+    val completedOn: LocalDate? = null,
+    val freezeGranted: Boolean = false,
+) {
+    val isComplete: Boolean get() = completedOn != null
+}
+
 data class StreakState(
     val current: Int = 0,
     val best: Int = 0,
@@ -12,6 +27,10 @@ data class StreakState(
     val milestones: List<Milestone> = emptyList(),
     val todaySecured: Boolean = false,
     val frozenDays: Set<LocalDate> = emptySet(),
+    /** The quest in progress, if a streak recently broke. */
+    val quest: ComebackQuest? = null,
+    /** Quests finished, newest last. */
+    val completedQuests: List<ComebackQuest> = emptyList(),
 ) {
     /** The next milestone above the current streak, if any. */
     fun nextMilestone(all: List<Int>): Int? = all.firstOrNull { it > current }
@@ -59,6 +78,7 @@ sealed class CelebrationEvent(val key: String) {
     data class StreakMilestone(val days: Int, val freezeGranted: Boolean) : CelebrationEvent("milestone:$days")
     data class LevelUp(val level: Int, val title: String) : CelebrationEvent("level:$level")
     data class BadgeEarned(val badge: Badge) : CelebrationEvent("badge:${badge.name}")
+    data class ComebackComplete(val date: LocalDate, val freezeGranted: Boolean, val brokenStreak: Int) : CelebrationEvent("comeback:$date")
 }
 
 /** Everything derived from history + settings for a given "today". */

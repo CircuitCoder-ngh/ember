@@ -69,6 +69,7 @@ fun StreakChip(streak: StreakState, modifier: Modifier = Modifier) {
         Spacer(Modifier.width(6.dp))
         Text(
             text = when {
+                streak.current == 0 && streak.quest != null -> "Comeback ${streak.quest.progress}/${streak.quest.target}"
                 streak.current == 0 -> "Start a streak"
                 streak.current == 1 -> "1 day streak"
                 else -> "${streak.current} day streak"

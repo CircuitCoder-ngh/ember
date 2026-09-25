@@ -14,6 +14,7 @@ val CelebrationSaver: Saver<CelebrationEvent?, String> = Saver(
             is CelebrationEvent.StreakMilestone -> "milestone|${e.days}|${e.freezeGranted}"
             is CelebrationEvent.LevelUp -> "level|${e.level}|${e.title}"
             is CelebrationEvent.BadgeEarned -> "badge|${e.badge.name}"
+            is CelebrationEvent.ComebackComplete -> "comeback|${e.date}|${e.freezeGranted}|${e.brokenStreak}"
         }
     },
     restore = { s ->
@@ -23,6 +24,7 @@ val CelebrationSaver: Saver<CelebrationEvent?, String> = Saver(
             "milestone" -> CelebrationEvent.StreakMilestone(parts[1].toInt(), parts[2].toBoolean())
             "level" -> CelebrationEvent.LevelUp(parts[1].toInt(), parts[2])
             "badge" -> CelebrationEvent.BadgeEarned(Badge.valueOf(parts[1]))
+            "comeback" -> CelebrationEvent.ComebackComplete(LocalDate.parse(parts[1]), parts[2].toBoolean(), parts[3].toInt())
             else -> null
         }
     },

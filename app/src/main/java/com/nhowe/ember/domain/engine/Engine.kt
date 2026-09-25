@@ -30,6 +30,9 @@ object Engine {
         streak.state.milestones.lastOrNull()
             ?.takeIf { it.reachedOn == today && streak.state.todaySecured }
             ?.let { events += CelebrationEvent.StreakMilestone(it.days, it.days >= StreakEngine.FREEZE_MIN_MILESTONE) }
+        streak.state.completedQuests.lastOrNull()
+            ?.takeIf { it.completedOn == today }
+            ?.let { events += CelebrationEvent.ComebackComplete(today, it.freezeGranted, it.brokenStreak) }
         val levelBefore = XpEngine.levelFor(xp.totalXp - xp.todayXp)
         if (xp.level > levelBefore) events += CelebrationEvent.LevelUp(xp.level, xp.levelTitle)
         badges.filterValues { it == today }.keys.forEach { badge: Badge -> events += CelebrationEvent.BadgeEarned(badge) }
