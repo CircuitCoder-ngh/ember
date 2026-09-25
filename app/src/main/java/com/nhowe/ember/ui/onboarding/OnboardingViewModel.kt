@@ -6,44 +6,48 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nhowe.ember.core.time.ALL_WEEKDAYS
-import com.nhowe.ember.data.repo.GoalDraft
+import com.nhowe.ember.data.templates.GoalTemplate
+import com.nhowe.ember.data.templates.Stacking
+import com.nhowe.ember.data.templates.TemplateCategory
 import com.nhowe.ember.di.AppContainer
-import com.nhowe.ember.domain.model.Cadence
-import com.nhowe.ember.domain.model.GoalType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-data class StarterGoal(val draft: GoalDraft, val defaultOn: Boolean)
-
-val StarterGoals = listOf(
-    StarterGoal(GoalDraft("Move for 30 minutes", "🏃", 0), true),
-    StarterGoal(GoalDraft("Read", "📚", 3, GoalType.QUANTITY, 20, "pages"), true),
-    StarterGoal(GoalDraft("Drink water", "💧", 3, GoalType.QUANTITY, 8, "glasses"), true),
-    StarterGoal(GoalDraft("No phone in bed", "📵", 4), true),
-    StarterGoal(GoalDraft("Journal", "📝", 1), false),
-    StarterGoal(GoalDraft("Meditate", "🧘", 8), false),
-    StarterGoal(GoalDraft("Eat a real vegetable", "🥗", 2), false),
-    StarterGoal(GoalDraft("In bed by 11", "🛌", 4), false),
-    StarterGoal(GoalDraft("Tidy for 10 minutes", "🧹", 9), false),
-    StarterGoal(GoalDraft("Gym session", "🏋️", 6, targetCount = 3, cadence = Cadence.WEEKLY), false),
-    StarterGoal(GoalDraft("Call someone you love", "📞", 5, targetCount = 1, cadence = Cadence.WEEKLY), false),
-    StarterGoal(GoalDraft("Deep work block", "💻", 6, weekdayMask = 0b0011111), false),
-    StarterGoal(GoalDraft("Finish a book", "📖", 3, targetCount = 1, cadence = Cadence.MONTHLY), false),
-    StarterGoal(GoalDraft("Stretch", "🤸", 7), false),
-)
-
 class OnboardingViewModel(private val c: AppContainer) : ViewModel() {
+    val categories: List<TemplateCategory> = c.templateRepository.categories.filter { it.id != "everyday" }
+
     var step by mutableStateOf(0)
     var name by mutableStateOf("")
-    val selected = mutableStateListOf<Int>().apply { addAll(StarterGoals.indices.filter { StarterGoals[it].defaultOn }) }
+    val selectedCategories = mutableStateListOf<String>()
+    val selectedTemplates = mutableStateListOf<String>().apply { add("basics") }
+    var expanded by mutableStateOf<String?>(null)
     var threshold by mutableStateOf(0.8f)
     var reminder by mutableStateOf(true)
     var saving by mutableStateOf(false)
         private set
 
-    fun toggle(index: Int) {
-        if (index in selected) selected.remove(index) else selected.add(index)
+    /** Bundles to offer: everyday basics first, then the chosen categories (or everything if none chosen). */
+    val offered: List<GoalTemplate>
+        get() {
+            val all = c.templateRepository.templates
+            val basics = all.filter { it.category == "everyday" }
+            val rest = if (selectedCategories.isEmpty()) all.filter { it.category != "everyday" }
+            else all.filter { it.category in selectedCategories }
+            return basics + rest
+        }
+
+    val chosenBundles: List<GoalTemplate> get() = offered.filter { it.id in selectedTemplates }
+    val dailyGoalCount: Int get() = chosenBundles.sumOf { it.dailyCount }
+    val totalGoalCount: Int get() = chosenBundles.sumOf { it.goals.size }
+    val stackingWarning: String? get() = Stacking.warning(dailyGoalCount, chosenBundles.count { it.category != "everyday" })
+
+    fun toggleCategory(id: String) {
+        if (id in selectedCategories) selectedCategories.remove(id) else selectedCategories.add(id)
+        c.haptics.tick()
+    }
+
+    fun toggleTemplate(id: String) {
+        if (id in selectedTemplates) selectedTemplates.remove(id) else selectedTemplates.add(id)
         c.haptics.tick()
     }
 
@@ -53,7 +57,8 @@ class OnboardingViewModel(private val c: AppContainer) : ViewModel() {
         c.haptics.celebrate()
         viewModelScope.launch {
             val today = c.today.value
-            selected.sorted().forEach { i -> c.goalRepository.createRecurring(StarterGoals[i].draft, today) }
+            val drafts = chosenBundles.flatMap { t -> t.goals.map { it.toDraft() } }
+            c.goalRepository.addAll(drafts, emptySet(), today)
             c.settingsRepository.setUserName(name)
             c.settingsRepository.setThreshold(threshold.toDouble())
             c.settingsRepository.setReminderEnabled(reminder)
@@ -62,7 +67,4 @@ class OnboardingViewModel(private val c: AppContainer) : ViewModel() {
             onDone()
         }
     }
-
-    @Suppress("unused")
-    private val allDays = ALL_WEEKDAYS
 }

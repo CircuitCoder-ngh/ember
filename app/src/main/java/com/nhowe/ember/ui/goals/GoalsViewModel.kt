@@ -74,9 +74,11 @@ class GoalsViewModel(private val c: AppContainer) : ViewModel() {
     }
 
     companion object {
-        fun currentVersion(history: History, goalId: String): GoalVersion? {
+        fun currentVersion(history: History, goalId: String, today: java.time.LocalDate = java.time.LocalDate.now()): GoalVersion? {
             val versions = history.versions.filter { it.goalId == goalId }
-            return versions.firstOrNull { it.validTo == null } ?: versions.maxByOrNull { it.validFrom }
+            return versions.firstOrNull { it.covers(today) }
+                ?: versions.filter { it.validFrom <= today }.maxByOrNull { it.validFrom }
+                ?: versions.minByOrNull { it.validFrom }
         }
     }
 }

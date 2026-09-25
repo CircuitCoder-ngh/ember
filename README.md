@@ -27,6 +27,10 @@ your best day, check them off, and watch your streak, XP and calendar fill in. E
   deterministically per week and scored from history; 75 XP each.
 - **Weekly recap**: a Sunday-evening card (also Monday, and always under Progress) with the week's score, best
   day, goals nailed, XP, quests, and one observation.
+- **Bundles**: a library of goal templates shipped as `app/src/main/assets/templates.json` (categories such as
+  Fitness, Mind, Learning, Creative, Money & home, Faith & seasonal). Onboarding asks what you want to work
+  on and offers matching bundles; the Goals tab has "Browse bundles" for later. A stacking guard warns when
+  you'd be starting more daily goals than most people sustain. Goals you already have are skipped by title.
 - **The flame evolves** through six forms with level (Spark → Ember → Flame → Blaze → Inferno → Supernova), and
   levels unlock flame skins and app accent themes chosen under Settings › Style.
 

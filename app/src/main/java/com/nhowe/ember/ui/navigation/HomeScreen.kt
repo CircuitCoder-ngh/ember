@@ -60,6 +60,7 @@ fun HomeScreen(
     onEditGoal: (String) -> Unit,
     onNewGoal: () -> Unit,
     onNewOneOff: (LocalDate) -> Unit,
+    onBrowseTemplates: () -> Unit = {},
 ) {
     val container = LocalAppContainer.current
     var tab by rememberSaveable { mutableStateOf(HomeTab.TODAY) }
@@ -116,7 +117,7 @@ fun HomeScreen(
                     HomeTab.TODAY -> TodayScreen(onOpenSettings = onOpenSettings, onEditGoal = onEditGoal, onNewOneOff = onNewOneOff, onNewGoal = onNewGoal)
                     HomeTab.CALENDAR -> CalendarScreen(onOpenSettings = onOpenSettings, onNewOneOff = onNewOneOff)
                     HomeTab.STATS -> StatsScreen(onOpenSettings = onOpenSettings)
-                    HomeTab.GOALS -> GoalsScreen(onOpenSettings = onOpenSettings, onEditGoal = onEditGoal, onNewGoal = onNewGoal, onNewOneOff = onNewOneOff)
+                    HomeTab.GOALS -> GoalsScreen(onOpenSettings = onOpenSettings, onEditGoal = onEditGoal, onNewGoal = onNewGoal, onNewOneOff = onNewOneOff, onBrowseTemplates = onBrowseTemplates)
                 }
             }
         }

@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Archive
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Event
@@ -76,6 +77,7 @@ fun GoalsScreen(
     onEditGoal: (String) -> Unit,
     onNewGoal: () -> Unit,
     onNewOneOff: (LocalDate) -> Unit,
+    onBrowseTemplates: () -> Unit = {},
 ) {
     val container = LocalAppContainer.current
     val vm: GoalsViewModel = viewModel { GoalsViewModel(container) }
@@ -100,7 +102,11 @@ fun GoalsScreen(
                 Text("One-off")
             }
         }
-        Spacer(Modifier.height(12.dp))
+        TextButton(onClick = onBrowseTemplates, modifier = Modifier.padding(horizontal = 12.dp)) {
+            Icon(Icons.Rounded.AutoAwesome, contentDescription = null)
+            Spacer(Modifier.width(6.dp))
+            Text("Browse bundles")
+        }
         SingleChoiceSegmentedButtonRow(Modifier.padding(horizontal = 16.dp).fillMaxWidth()) {
             GoalsTab.entries.forEachIndexed { i, t ->
                 SegmentedButton(
@@ -116,7 +122,7 @@ fun GoalsScreen(
         when (tab) {
             GoalsTab.ACTIVE -> {
                 val items = vm.activeGoals(history)
-                if (items.isEmpty()) EmptyHint("No daily goals yet. Add one to start scoring your days.")
+                if (items.isEmpty()) EmptyHint("No daily goals yet. Add one, or browse the bundles above.")
                 else ReorderableGoalList(
                     items = items,
                     onMove = { from, to -> vm.move(items, from, to) },

@@ -22,6 +22,7 @@ import com.nhowe.ember.di.LocalAppContainer
 import com.nhowe.ember.ui.goals.GoalEditorScreen
 import com.nhowe.ember.ui.onboarding.OnboardingScreen
 import com.nhowe.ember.ui.settings.SettingsScreen
+import com.nhowe.ember.ui.templates.TemplateBrowserScreen
 import com.nhowe.ember.ui.theme.EmberTheme
 
 @Composable
@@ -57,7 +58,11 @@ fun EmberRoot() {
                             onEditGoal = { id -> backStack.add(GoalEditorRoute(goalId = id)) },
                             onNewGoal = { backStack.add(GoalEditorRoute()) },
                             onNewOneOff = { date -> backStack.add(GoalEditorRoute(oneOffEpochDay = date.toEpochDay().toInt())) },
+                            onBrowseTemplates = { backStack.add(TemplatesRoute) },
                         )
+                    }
+                    entry<TemplatesRoute> {
+                        TemplateBrowserScreen(onBack = { backStack.removeLastOrNull() })
                     }
                     entry<SettingsRoute> {
                         SettingsScreen(onBack = { backStack.removeLastOrNull() })

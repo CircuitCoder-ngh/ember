@@ -12,10 +12,11 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,14 +27,11 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -44,17 +42,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nhowe.ember.di.LocalAppContainer
-import com.nhowe.ember.domain.model.Cadence
-import com.nhowe.ember.domain.model.GoalType
 import com.nhowe.ember.ui.components.FlameMascot
 import com.nhowe.ember.ui.components.FlameState
-import com.nhowe.ember.ui.theme.goalColor
+import com.nhowe.ember.ui.templates.StackingBanner
+import com.nhowe.ember.ui.templates.TemplateCard
 import kotlin.math.roundToInt
+
+private const val STEPS = 4
 
 @Composable
 fun OnboardingScreen(onDone: () -> Unit) {
@@ -73,9 +71,8 @@ fun OnboardingScreen(onDone: () -> Unit) {
             .navigationBarsPadding()
             .imePadding(),
     ) {
-        // step dots
         Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.Center) {
-            repeat(3) { i ->
+            repeat(STEPS) { i ->
                 Box(
                     Modifier
                         .padding(4.dp)
@@ -98,28 +95,33 @@ fun OnboardingScreen(onDone: () -> Unit) {
         ) { step ->
             when (step) {
                 0 -> Intro()
-                1 -> Starters(vm)
+                1 -> Categories(vm)
+                2 -> Bundles(vm)
                 else -> Rules(vm)
             }
         }
 
-        Row(Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
             if (vm.step > 0) TextButton(onClick = { vm.step-- }) { Text("Back") }
             Spacer(Modifier.weight(1f))
+            if (vm.step == 2) {
+                Text("${vm.totalGoalCount} goals", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(end = 12.dp))
+            }
             Button(
                 onClick = {
                     when (vm.step) {
-                        0, 1 -> { container.haptics.click(); vm.step++ }
+                        0, 1, 2 -> { container.haptics.click(); vm.step++ }
                         else -> if (vm.reminder && Build.VERSION.SDK_INT >= 33) notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else vm.finish(onDone)
                     }
                 },
-                enabled = !vm.saving && (vm.step != 1 || vm.selected.isNotEmpty()),
+                enabled = !vm.saving && (vm.step != 2 || vm.selectedTemplates.isNotEmpty()),
                 modifier = Modifier.height(50.dp),
             ) {
                 Text(
                     when (vm.step) {
                         0 -> "Let's go"
-                        1 -> "Next"
+                        1 -> if (vm.selectedCategories.isEmpty()) "Show me everything" else "Next"
+                        2 -> "Next"
                         else -> "Light it up"
                     },
                     style = MaterialTheme.typography.titleMedium,
@@ -145,13 +147,28 @@ private fun Intro() {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun Starters(vm: OnboardingViewModel) {
+private fun Categories(vm: OnboardingViewModel) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
         Spacer(Modifier.height(12.dp))
-        Text("Pick your starters", style = MaterialTheme.typography.headlineMedium)
-        Text("You can change these any time. Past days always keep their record.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.height(12.dp))
+        Text("What do you want to work on?", style = MaterialTheme.typography.headlineMedium)
+        Text("Pick one or two. You can always add more later.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(16.dp))
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            vm.categories.forEach { cat ->
+                FilterChip(
+                    selected = cat.id in vm.selectedCategories,
+                    onClick = { vm.toggleCategory(cat.id) },
+                    label = { Text("${cat.emoji}  ${cat.title}") },
+                )
+            }
+        }
+        Spacer(Modifier.height(20.dp))
+        vm.selectedCategories.mapNotNull { id -> vm.categories.firstOrNull { it.id == id } }.forEach { cat ->
+            Text("${cat.emoji} ${cat.title}: ${cat.blurb}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(vertical = 2.dp))
+        }
+        Spacer(Modifier.height(24.dp))
         OutlinedTextField(
             value = vm.name,
             onValueChange = { vm.name = it.take(24) },
@@ -159,44 +176,27 @@ private fun Starters(vm: OnboardingViewModel) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
+        Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun Bundles(vm: OnboardingViewModel) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
         Spacer(Modifier.height(12.dp))
-        StarterGoals.forEachIndexed { i, starter ->
-            val on = i in vm.selected
-            val color = goalColor(starter.draft.colorIndex)
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(if (on) color.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainer)
-                    .clickable { vm.toggle(i) }
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(Modifier.size(40.dp).clip(CircleShape).background(color.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
-                    Text(starter.draft.emoji, style = MaterialTheme.typography.titleMedium)
-                }
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(starter.draft.title, style = MaterialTheme.typography.titleMedium)
-                    val sub = buildString {
-                        if (starter.draft.type == GoalType.QUANTITY) append("${starter.draft.targetCount} ${starter.draft.unit}")
-                        when (starter.draft.cadence) {
-                            Cadence.WEEKLY -> append("${starter.draft.targetCount}× a week")
-                            Cadence.MONTHLY -> append("${starter.draft.targetCount}× a month")
-                            Cadence.DAILY -> when (starter.draft.weekdayMask) {
-                                0b0011111 -> append(if (isNotEmpty()) " · weekdays" else "Weekdays")
-                                0b1100000 -> append(if (isNotEmpty()) " · weekends" else "Weekends")
-                            }
-                        }
-                    }
-                    if (sub.isNotEmpty()) Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Box(
-                    Modifier.size(28.dp).clip(CircleShape).background(if (on) color else MaterialTheme.colorScheme.surfaceContainerHighest),
-                    contentAlignment = Alignment.Center,
-                ) { if (on) Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp)) }
-            }
+        Text("Pick your bundles", style = MaterialTheme.typography.headlineMedium)
+        Text("Each bundle is a few goals that work together. Tap to see what's inside.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(12.dp))
+        StackingBanner(vm.stackingWarning)
+        vm.offered.forEach { t ->
+            TemplateCard(
+                template = t,
+                selected = t.id in vm.selectedTemplates,
+                expanded = vm.expanded == t.id,
+                onToggle = { vm.toggleTemplate(t.id) },
+                onExpand = { vm.expanded = if (vm.expanded == t.id) null else t.id },
+                modifier = Modifier.padding(vertical = 5.dp),
+            )
         }
         Spacer(Modifier.height(16.dp))
     }

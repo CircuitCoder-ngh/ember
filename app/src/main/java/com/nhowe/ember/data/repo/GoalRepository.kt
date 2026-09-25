@@ -95,6 +95,21 @@ class GoalRepository(
         idsInOrder.forEachIndexed { index, id -> goalDao.setOrder(id, index) }
     }
 
+    /**
+     * Adds every goal in [drafts] that the user doesn't already have (matched by title, ignoring case,
+     * among goals that are not archived). Returns (added, skipped).
+     */
+    suspend fun addAll(drafts: List<GoalDraft>, existingActiveTitles: Set<String>, today: LocalDate): Pair<Int, Int> {
+        var added = 0; var skipped = 0
+        val seen = existingActiveTitles.map { it.trim().lowercase() }.toMutableSet()
+        for (d in drafts) {
+            val key = d.title.trim().lowercase()
+            if (key in seen) { skipped++; continue }
+            createRecurring(d, today); seen += key; added++
+        }
+        return added to skipped
+    }
+
     /** Permanently removes the goal and all its history. */
     suspend fun delete(goalId: String) = goalDao.delete(goalId)
 

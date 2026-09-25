@@ -8,6 +8,7 @@ import com.nhowe.ember.data.repo.GoalRepository
 import com.nhowe.ember.data.repo.HistoryRepository
 import com.nhowe.ember.data.repo.ProgressRepository
 import com.nhowe.ember.data.repo.SettingsRepository
+import com.nhowe.ember.data.templates.TemplateRepository
 import com.nhowe.ember.domain.EngineStore
 import com.nhowe.ember.notifications.ProgressNotifier
 import com.nhowe.ember.notifications.ReminderScheduler
@@ -33,6 +34,7 @@ class AppContainer(context: Context) {
 
     val db: EmberDatabase = EmberDatabase.build(context)
     val settingsRepository = SettingsRepository(context)
+    val templateRepository = TemplateRepository(context)
     val historyRepository = HistoryRepository(db)
     val goalRepository = GoalRepository(db.goalDao(), db.goalVersionDao())
     val progressRepository = ProgressRepository(db.completionDao(), db.dayOverrideDao())
